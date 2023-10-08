@@ -1,62 +1,74 @@
 import React from 'react';
 import {View, Text, Image, StyleSheet, Button} from 'react-native';
+
+// Import a custom component
 import CurvedLineChart from "../utils/CurvedLineChart";
 
-const StockContainer = ({ stockData }) => {
-    // Extract stock data from props
-    const { logo, ticker, companyName, percentageChange, graphData } = stockData;
+/**
+ * A component representing a stock container.
+ *
+ * @param {Object} stockData - Data for the stock.
+ * @param {string} stockData.logo - URL of the stock's logo.
+ * @param {string} stockData.ticker - Stock ticker symbol.
+ * @param {string} stockData.companyName - Company name.
+ * @param {number} stockData.percentageChange - Percentage change in stock value.
+ * @param {Array} stockData.graphData - Data for the stock's price graph.
+ * @returns {JSX.Element} - Rendered component.
+ */
+const StockContainer = ({stockData}) => {
+    const {logo, ticker, companyName, percentageChange, graphData} = stockData;
 
     return (
-        <View style={styles.container}>
-            {/* Left side */}
+        <View style={styles.StockContainer}>
+            {/* Left Container */}
             <View style={styles.leftContainer}>
-                <Image source={{ uri: logo }} style={[styles.logo, { resizeMode: 'contain' }]} />
+                <Image source={{uri: logo}} style={styles.logo}/>
                 <View style={styles.details}>
                     <Text style={styles.stockName}>{ticker}</Text>
                     <Text style={styles.companyName}>{companyName}</Text>
-                    <Text style={styles.percentageChange}>{percentageChange}</Text>
+                    <Text style={{fontSize: 14, color: percentageChange >= 0 ? 'green' : 'red'}}>
+                        {percentageChange + '%'}
+                    </Text>
                 </View>
             </View>
 
-             {/*Middle (Graph)*/}
+            {/* Middle Container */}
             <View style={styles.middleContainer}>
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <CurvedLineChart data ={graphData}/>
-                </View>
+                {/* Render the curved line chart */}
+                <CurvedLineChart data={graphData}/>
             </View>
 
-            {/* Right side (for future content) */}
+            {/* Right Container */}
             <View style={styles.rightContainer}>
-                {/* Future content goes here */}
-                <Button title="Predict" />
+                <Button color={'#f8adb3'} title="Predict"/>
             </View>
         </View>
     );
 };
 
+// Styles for the StockContainer component
 const styles = StyleSheet.create({
-    container: {
+    StockContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 10,
-        borderBottomWidth: 1,
         borderColor: '#ccc',
-        marginTop: 10,
-        backgroundColor:'#262d3b',
+        marginTop: 15,
+        backgroundColor: '#21262f',
         marginLeft: 20,
         borderTopLeftRadius: 10,
         borderBottomLeftRadius: 10,
     },
     leftContainer: {
-        flex:1,
+        flex: 3,
         flexDirection: 'row',
         alignItems: 'center',
-
     },
     logo: {
         width: 50,
         height: 50,
         marginRight: 10,
+        resizeMode: 'contain',
     },
     details: {
         flex: 1,
@@ -64,24 +76,19 @@ const styles = StyleSheet.create({
     stockName: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: 'white'
+        color: 'white',
     },
     companyName: {
         fontSize: 14,
-        color: '#555',
-    },
-    percentageChange: {
-        fontSize: 14,
-        color: 'green', // You can adjust the color based on positive/negative percentage change
+        color: '#8a8c90',
     },
     middleContainer: {
-        flex: 1, // Adjust the width as needed
+        flex: 1,
         alignItems: 'center',
-
-        // Add styles for your graph component here
+        justifyContent: 'center',
     },
     rightContainer: {
-        // Add styles for the right side (future content) here
+        flex: 1,
     },
 });
 
