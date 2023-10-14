@@ -4,7 +4,7 @@
  * @param {Object} data - Data received from Yahoo Finance API.
  * @returns {Array} An array of data points suitable for rendering a graph.
  */
-function convertDataToGraphData(data) {
+function convertDataToLineChartData(data) {
     // Check if the data structure is valid, otherwise return an empty array.
     if (!data || !data["chart"] || !data["chart"]["result"] || !data["chart"]["result"][0]) {
         return [];
@@ -27,4 +27,4 @@ function convertDataToGraphData(data) {
     }));
 }
 
-export default convertDataToGraphData;
+export default convertDataToLineChartData;

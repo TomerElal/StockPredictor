@@ -1,9 +1,8 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {View, Text, Image, StyleSheet, Button} from 'react-native';
-
+import {useNavigation} from '@react-navigation/native';
 // Import a custom component
 import CurvedLineChart from "../utils/CurvedLineChart";
-
 /**
  * A component representing a stock container.
  *
@@ -17,6 +16,17 @@ import CurvedLineChart from "../utils/CurvedLineChart";
  */
 const StockContainer = ({stockData}) => {
     const {logo, ticker, companyName, percentageChange, graphData} = stockData;
+    const navigation = useNavigation();
+
+    // Navigate to the Predict screen and pass data as route params
+    const handlePredict = () => {
+        navigation.navigate('PredictScreen', {
+            ticker: ticker,
+            companyName: companyName,
+            percentageChange: percentageChange,
+            graphData: graphData,
+        });
+    };
 
     return (
         <View style={styles.StockContainer}>
@@ -40,8 +50,9 @@ const StockContainer = ({stockData}) => {
 
             {/* Right Container */}
             <View style={styles.rightContainer}>
-                <Button color={'#f8adb3'} title="Predict"/>
+                <Button onPress={handlePredict} color={'#f8adb3'} title={"Predict"}/>
             </View>
+
         </View>
     );
 };
@@ -92,4 +103,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default StockContainer;
+export default  StockContainer;

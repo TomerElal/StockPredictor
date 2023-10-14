@@ -1,15 +1,15 @@
 import React, {useEffect, useState} from "react";
 import {ActivityIndicator, FlatList, StyleSheet, Text, View} from "react-native";
 import StockContainer from "./StockContainer";
-import convertDataToGraphData from "../utils/convertDataToGraphData";
+import convertDataToGraphData from "../utils/ConvertDataToLineChartData";
 import {CalculatePercentChange} from "../utils/CalculatePercentChange";
 
 // List of stock tickers
 const stocks = [
     'SPY', 'TSLA', 'AAPL', 'NVDA', 'MSFT', 'GOOG', 'AMZN', 'META', 'BABA',
     'NFLX', 'INTC', 'MARA', 'INTU', 'AMGN', 'QCOM', 'HON', 'AMAT', 'BKNG', 'SBUX', 'ISRG',
-    'ADP', 'MDLZ', 'GILD', 'VRTX', 'REGN', 'ADI', 'QQQ', 'DIA', 'ONEQ', 'AVGO', 'COST', 'ADBE',
-    'PEP', 'CSCO', 'AMD', 'TMUS', 'ATVI', 'PYPL', 'TTD', 'MTCH', 'ZG', 'YELP'
+    'ADP', 'MDLZ', 'GILD', 'VRTX', 'REGN', 'ADI', 'QQQ', 'DIA', 'AVGO', 'COST', 'ADBE',
+    'PEP', 'CSCO', 'AMD', 'TMUS', 'PYPL', 'TTD', 'MTCH', 'YELP',// 'ATVI', 'ONEQ', 'ZG',
 ];
 
 export default function StockList() {
