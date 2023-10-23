@@ -1,20 +1,21 @@
-import React, {useRef, useState} from 'react';
+import React, {useState} from 'react';
 import {View, Text, TouchableOpacity, TouchableHighlight, TextInput} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import GridIcon from '../../assets/icons/GridIcon';
+import {useNavigation} from "@react-navigation/native";
 
 /**
  * The navigation bar component for the application.
  */
-const NavigationBar = ({ onSearchSubmit, onHomeReturn }) => {
+const NavigationBar = () => {
     // State to track whether the homepage button is pressed
     const [HomePagePressed, setHomePagePressed] = useState(false);
     const [searchPressed, setSearchPressed] = useState(false)
     const [searchText, setSearchText] = useState('')
+    const navigation = useNavigation();
 
     function handlePress(key) {
         console.log('Button pressed', key);
-        onHomeReturn()
     }
     const handlePressIn = () => {
         setHomePagePressed(true);
@@ -26,7 +27,6 @@ const NavigationBar = ({ onSearchSubmit, onHomeReturn }) => {
     function handleSearch(){
         setSearchPressed(!searchPressed);
         setSearchText('');
-        onSearchSubmit('');
     }
     function handleSearchInput(text){
         setSearchText(text);
@@ -34,7 +34,9 @@ const NavigationBar = ({ onSearchSubmit, onHomeReturn }) => {
 
     function handleSearchSubmit() {
         if (searchText) {
-            onSearchSubmit(searchText); // Call the prop function
+            navigation.navigate('StockSearchScreen', {
+                ticker: searchText,
+            });
         }
     }
 

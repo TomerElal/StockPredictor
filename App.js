@@ -6,6 +6,7 @@ import {CardStyleInterpolators, createStackNavigator} from '@react-navigation/st
 import Home from "./src/screens/Home";
 import Predict from "./src/screens/Predict";
 import { View } from "react-native";
+import StockSearch from "./src/screens/StockSearch";
 
 const Stack = createStackNavigator();
 
@@ -28,6 +29,27 @@ const App = () => {
                         gestureEnabled: true, // Enable gestures
                         gestureResponseDistance:550, // slide from top to bottom anywhere on the screen to go back
                         gestureDirection: 'vertical', // Allow vertical gestures
+                        // cardOverlayEnabled: true,
+                        cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter, // Slide from the bottom
+                        cardOverlay: () => (
+                            <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.7)' }} />
+                        ),
+                        headerTintColor: '#f8adb3',
+                        headerTitle:'',
+                        headerStyle: {
+                            backgroundColor: 'black',
+                        },
+
+                    }}
+                />
+                <Stack.Screen
+                    name="StockSearchScreen"
+                    component={StockSearch}
+                    options={{
+                        headerShown: false,
+                        gestureEnabled: true, // Enable gestures
+                        gestureResponseDistance:550, // slide from top to bottom anywhere on the screen to go back
+                        gestureDirection: 'horizontal', // Allow vertical gestures
                         // cardOverlayEnabled: true,
                         cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter, // Slide from the bottom
                         cardOverlay: () => (
