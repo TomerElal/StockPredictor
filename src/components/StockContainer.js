@@ -15,9 +15,9 @@ import CurvedLineChart from "../utils/CurvedLineChart";
  * @returns {JSX.Element} - Rendered component.
  */
 const StockContainer = ({stockData}) => {
-    const {logo, ticker, companyName, percentageChange, graphData} = stockData;
+    let {logo, ticker, companyName, percentageChange, graphData, currency, exchDisp} = stockData;
     const navigation = useNavigation();
-
+    graphData = graphData.filter((data) => data.y !== null);
     // Navigate to the Predict screen and pass data as route params
     const handlePredict = () => {
         navigation.navigate('PredictScreen', {
@@ -25,6 +25,8 @@ const StockContainer = ({stockData}) => {
             companyName: companyName,
             percentageChange: percentageChange,
             graphData: graphData,
+            currency: currency,
+            exchDisp: exchDisp,
         });
     };
 

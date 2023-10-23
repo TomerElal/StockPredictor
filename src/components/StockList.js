@@ -1,15 +1,23 @@
 import React, {useEffect, useState} from "react";
 import {ActivityIndicator, FlatList, StyleSheet, Text, View} from "react-native";
 import StockContainer from "./StockContainer";
-import convertDataToGraphData from "../utils/ConvertDataToLineChartData";
-import {CalculatePercentChange} from "../utils/CalculatePercentChange";
+import {FetchStockData} from "../utils/FetchStockData";
+import Loading from "../screens/Loading";
 
 // List of stock tickers
 const stocks = [
-    'SPY', 'TSLA', 'AAPL', 'NVDA', 'MSFT', 'GOOG', 'AMZN', 'META', 'BABA',
-    'NFLX', 'INTC', 'MARA', 'INTU', 'AMGN', 'QCOM', 'HON', 'AMAT', 'BKNG', 'SBUX', 'ISRG',
-    'ADP', 'MDLZ', 'GILD', 'VRTX', 'REGN', 'ADI', 'QQQ', 'DIA', 'AVGO', 'COST', 'ADBE',
-    'PEP', 'CSCO', 'AMD', 'TMUS', 'PYPL', 'TTD', 'MTCH', 'YELP',// 'ATVI', 'ONEQ', 'ZG',
+    'TSLA', 'AAPL', 'MSFT', 'NVDA', 'NFLX', 'GOOGL', 'META', 'PYPL', 'BABA', 'TSM',
+    'AVGO', 'ORCL', 'ADBE', 'ASML', 'CSCO', 'NKE', 'CRM', 'ACN', 'AMD',
+    // 'SAP', 'INTC', 'INTU', 'TXN', 'IBM', 'QCOM', 'NOW', 'AMAT', 'SONY',
+    // 'MCD', 'ADI', 'LRCX', 'PANW', 'MU', 'SNPS', 'INFY', 'FI', 'CDNS', 'SHOP',
+    // 'VMW', 'KLAC', 'ANET', 'WDAY', 'ROP', 'DELL', 'NXPI', 'APH', 'MSI',
+    // 'FTNT', 'ADSK', 'MCHP', 'TEL', 'STM', 'CTSH',
+    // 'FIS', 'IT', 'CDW', 'SQ', 'HPQ', 'FTV', 'SPLK', 'ANSS',
+    // 'ZS', 'GLW', 'FICO', 'HUBS', 'KEYS', 'VRSN', 'HPE','MPWR', 'BR',
+    // 'GRMN', 'UMC', 'TDY', 'FLT', 'JBL', 'PTC', 'ASX', 'AKAM', 'FSLR',
+    // 'CHKP', 'TYL', 'NTAP', 'PAYC', 'SWKS', 'TER', 'SMCI', 'OKTA',
+    // 'ENTG', 'WDC', 'STX',  'EPAM', 'LDOS', 'SSNC', 'TRMB',
+    // 'MANH', 'GEN', 'CDAY', 'GDDY', 'LOGI', 'FLEX',  'PCTY', 'ZBRA', 'JKHY'
 ];
 
 export default function StockList() {
@@ -17,35 +25,9 @@ export default function StockList() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-
-        // Function to fetch stock data for a single ticker
-        const fetchStockData = async (ticker, interval) => {
-            const companyNameUrl = `https://query1.finance.yahoo.com/v1/finance/search?q=${ticker}&quotesCount=1&newsCount=0`;
-            const dailyChangeUrl = `https://query1.finance.yahoo.com/v7/finance/chart/${ticker}?interval=${interval}`;
-            const companyLogoUrl = `https://storage.googleapis.com/iexcloud-hl37opg/api/logos/${ticker}.png`;
-
-            try {
-                const [companyNameResponse, dailyChangeResponse] = await Promise.all([
-                    fetch(companyNameUrl).then((response) => response.json()),
-                    fetch(dailyChangeUrl).then((response) => response.json()),
-                ]);
-                return {
-                    logo: companyLogoUrl,
-                    ticker: ticker,
-                    companyName: companyNameResponse && companyNameResponse["quotes"][0]["shortname"],
-                    percentageChange: dailyChangeResponse !== null ?
-                        CalculatePercentChange(dailyChangeResponse) : 'N/A',
-                    graphData: convertDataToGraphData(dailyChangeResponse),
-                };
-            } catch (error) {
-                console.error(`Error fetching data for ${ticker}:`, error);
-                return null;
-            }
-        };
-
         // Function to fetch data for all stocks
         const fetchAllStockData = async () => {
-            const stockPromises = stocks.map((ticker) => fetchStockData(ticker, '5m'));
+            const stockPromises = stocks.map((ticker) => FetchStockData(ticker, '5m'));
             const stocksData = await Promise.all(stockPromises);
             const filteredStockData = stocksData.filter((data) => data !== null);
             setStocksData(filteredStockData);
@@ -55,14 +37,7 @@ export default function StockList() {
         fetchAllStockData();
     }, []);
 
-    if (loading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="white"/>
-                <Text style={{color: 'white'}}>Loading Fonts and Data...</Text>
-            </View>
-        );
-    }
+    if (loading) {return (<Loading/>);}
 
     return (
         <FlatList
@@ -73,11 +48,3 @@ export default function StockList() {
     );
 }
 
-const styles = StyleSheet.create({
-    loadingContainer: {
-        backgroundColor: 'black',
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-});

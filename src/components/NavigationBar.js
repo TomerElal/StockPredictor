@@ -1,42 +1,63 @@
-import React, {useState} from 'react';
-import {View, Text, TouchableOpacity, TouchableHighlight} from 'react-native';
+import React, {useRef, useState} from 'react';
+import {View, Text, TouchableOpacity, TouchableHighlight, TextInput} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import GridIcon from '../../assets/icons/GridIcon';
 
 /**
  * The navigation bar component for the application.
  */
-const NavigationBar = () => {
+const NavigationBar = ({ onSearchSubmit, onHomeReturn }) => {
     // State to track whether the homepage button is pressed
     const [HomePagePressed, setHomePagePressed] = useState(false);
+    const [searchPressed, setSearchPressed] = useState(false)
+    const [searchText, setSearchText] = useState('')
 
-    /**
-     * Handles the button press event.
-     * @param {string} key - The key associated with the pressed button.
-     */
     function handlePress(key) {
         console.log('Button pressed', key);
+        onHomeReturn()
     }
-
-    /**
-     * Handles the button press in event.
-     */
     const handlePressIn = () => {
         setHomePagePressed(true);
     };
-
-    /**
-     * Handles the button press out event.
-     */
     const handlePressOut = () => {
         setHomePagePressed(false);
     };
 
+    function handleSearch(){
+        setSearchPressed(!searchPressed);
+        setSearchText('');
+        onSearchSubmit('');
+    }
+    function handleSearchInput(text){
+        setSearchText(text);
+    }
+
+    function handleSearchSubmit() {
+        if (searchText) {
+            onSearchSubmit(searchText); // Call the prop function
+        }
+    }
+
     return (
         <View style={styles.container}>
-            {/* Homepage Button */}
-            <TouchableHighlight
-                onPress={() => handlePress('HomePage')}
+                {searchPressed?(
+                    <>
+                        <TextInput
+                            style={styles.searchBar}
+                            placeholder={"Search stock"}
+                            value={searchText}
+                            onChangeText={handleSearchInput}
+                            onSubmitEditing={handleSearchSubmit}
+                            autoFocus={true}
+                        />
+                        <TouchableOpacity onPress={handleSearch} style={{padding:10, paddingLeft:20, marginTop: 5}}>
+                            <Text style={{color: "#f8adb3"}}>Cancel</Text>
+                        </TouchableOpacity>
+                    </>
+                ):(
+                    <>
+                    <TouchableHighlight
+                    onPress={() => handlePress('HomePage')}
                 onPressIn={handlePressIn}
                 onPressOut={handlePressOut}
                 underlayColor="transparent"
@@ -45,17 +66,17 @@ const NavigationBar = () => {
                 <Text style={[styles.appName, {color: HomePagePressed ? '#f8adb3' : 'white'}]}>
                     Stock Predictor
                 </Text>
-            </TouchableHighlight>
+                </TouchableHighlight>
 
-            {/* Icon Buttons */}
-            <View style={styles.iconsContainer}>
-                <TouchableOpacity onPress={() => handlePress('Search')} style={{padding: 10}}>
+                <TouchableOpacity onPress={handleSearch} style={{padding: 10, marginTop: 5}}>
                     <Icon name="search" size={22} style={styles.icon}/>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => handlePress('Menu')} style={{padding: 10}}>
+                    </>
+                )}
+
+                <TouchableOpacity onPress={() => handlePress('Menu')} style={{padding: 10, marginTop:5}}>
                     <GridIcon width={25} height={25}/>
                 </TouchableOpacity>
-            </View>
         </View>
     );
 };
@@ -82,8 +103,16 @@ const styles = {
     },
     icon: {
         color: 'white',
-        marginRight: 15,
+        marginLeft: 65,
     },
+    searchBar: {
+        backgroundColor: 'white',
+        borderRadius: 5,
+        flex:1,
+        height: 35,
+        paddingHorizontal: 15,
+        marginTop: 5,
+    }
 };
 
 export default NavigationBar;

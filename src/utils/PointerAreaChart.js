@@ -26,15 +26,13 @@ function decideColor(changePercentage, obj) {
     }
 }
 function PointerAreaChart({props}) {
-    const {dailyData, changePercentage} = props;
-    const yValues = dailyData.map(item => item.y);
-    const minVal = Math.min(...yValues);
-    const maxVal = Math.max(...yValues);
+    const {dailyData, changePercentage, maxVal, minVal} = props;
     return (
         <View
             style={{
-                paddingVertical: 100,
-                paddingLeft: 20,
+                paddingTop: 25,
+                paddingBottom: 55,
+                paddingLeft: 25,
             }}>
             <LineChart
                 areaChart

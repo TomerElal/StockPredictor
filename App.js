@@ -25,12 +25,11 @@ const App = () => {
                     name="PredictScreen"
                     component={Predict}
                     options={{
-                        cardStyle: { backgroundColor: 'transparent' },
                         gestureEnabled: true, // Enable gestures
-                        gestureResponseDistance:300, // slide from top to bottom anywhere on the screen to go back
+                        gestureResponseDistance:550, // slide from top to bottom anywhere on the screen to go back
                         gestureDirection: 'vertical', // Allow vertical gestures
-                        cardOverlayEnabled: true,
-                        cardStyleInterpolator: CardStyleInterpolators.forFadeFromBottomAndroid, // Slide from the bottom
+                        // cardOverlayEnabled: true,
+                        cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter, // Slide from the bottom
                         cardOverlay: () => (
                             <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.7)' }} />
                         ),
