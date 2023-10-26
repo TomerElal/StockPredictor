@@ -1,34 +1,58 @@
-import React, {useRef, useState} from 'react';
-import {View, Text, TouchableOpacity, TouchableHighlight, TextInput} from 'react-native';
+import React, {forwardRef, useImperativeHandle, useState} from 'react';
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    TouchableHighlight,
+    TextInput,
+    Platform,
+    UIManager,
+    LayoutAnimation
+} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import GridIcon from '../../assets/icons/GridIcon';
+import Menu from "./Menu";
 
-/**
- * The navigation bar component for the application.
- */
-const NavigationBar = ({ onSearchSubmit, onHomeReturn }) => {
-    // State to track whether the homepage button is pressed
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
+const NavigationBar = forwardRef(({ onSearchSubmit, onHomeReturn, flatListRef, boolIsHomeScreen }, ref) => {
     const [HomePagePressed, setHomePagePressed] = useState(false);
-    const [searchPressed, setSearchPressed] = useState(false)
-    const [searchText, setSearchText] = useState('')
+    const [searchPressed, setSearchPressed] = useState(false);
+    const [searchText, setSearchText] = useState('');
+    const [menuVisible, setMenuVisible] = useState(false);
+    const handleMenuPress = () => {
+        setSearchPressed(false);
+        setMenuVisible(!menuVisible);
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
+    };
 
-    function handlePress(key) {
-        console.log('Button pressed', key);
-        onHomeReturn()
+    function handleHomePress() {
+        if (boolIsHomeScreen) {
+            flatListRef.current.scrollToIndex({ index: 0, animated: true });
+        }
+        onHomeReturn();
+        setMenuVisible(false);
     }
+
     const handlePressIn = () => {
         setHomePagePressed(true);
     };
+
     const handlePressOut = () => {
         setHomePagePressed(false);
     };
 
-    function handleSearch(){
+    function handleSearch() {
+        setMenuVisible(false);
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
         setSearchPressed(!searchPressed);
         setSearchText('');
         onSearchSubmit('');
     }
-    function handleSearchInput(text){
+
+    function handleSearchInput(text) {
         setSearchText(text);
     }
 
@@ -37,68 +61,77 @@ const NavigationBar = ({ onSearchSubmit, onHomeReturn }) => {
             onSearchSubmit(searchText); // Call the prop function
         }
     }
+    function closeMenu(){
+        setMenuVisible(false);
+    }
+
+    useImperativeHandle(ref, () => ({
+        closeMenu: closeMenu,
+    }));
 
     return (
-        <View style={styles.container}>
-                {searchPressed?(
-                    <>
-                        <TextInput
-                            style={styles.searchBar}
-                            placeholder={"Search stock"}
-                            value={searchText}
-                            onChangeText={handleSearchInput}
-                            onSubmitEditing={handleSearchSubmit}
-                            autoFocus={true}
-                        />
-                        <TouchableOpacity onPress={handleSearch} style={{padding:10, paddingLeft:20, marginTop: 5}}>
-                            <Text style={{color: "#f8adb3"}}>Cancel</Text>
-                        </TouchableOpacity>
-                    </>
-                ):(
-                    <>
+        <View style={styles.navContainer}>
+            {searchPressed ? (
+                <>
+                    <TextInput
+                        style={styles.searchBar}
+                        placeholder={"Search stock"}
+                        value={searchText}
+                        onChangeText={handleSearchInput}
+                        onSubmitEditing={handleSearchSubmit}
+                        autoFocus={true}
+                    />
+                    <TouchableOpacity onPress={handleSearch} style={{ padding: 10, paddingLeft: 20, marginTop: 5 }}>
+                        <Text style={{ color: "#f8adb3" }}>Cancel</Text>
+                    </TouchableOpacity>
+                </>
+            ) : (
+                <>
                     <TouchableHighlight
-                    onPress={() => handlePress('HomePage')}
-                onPressIn={handlePressIn}
-                onPressOut={handlePressOut}
-                underlayColor="transparent"
-                style={{padding: 10}}
-            >
-                <Text style={[styles.appName, {color: HomePagePressed ? '#f8adb3' : 'white'}]}>
-                    Stock Predictor
-                </Text>
-                </TouchableHighlight>
+                        onPress={() => handleHomePress()}
+                        onPressIn={handlePressIn}
+                        onPressOut={handlePressOut}
+                        underlayColor="transparent"
+                        style={{ padding: 10 }}
+                    >
+                        <Text style={[styles.appName, { color: HomePagePressed ? '#f8adb3' : 'white' }]}>
+                            Stock Predictor
+                        </Text>
+                    </TouchableHighlight>
 
-                <TouchableOpacity onPress={handleSearch} style={{padding: 10, marginTop: 5}}>
-                    <Icon name="search" size={22} style={styles.icon}/>
-                </TouchableOpacity>
-                    </>
-                )}
+                    <TouchableOpacity onPress={handleSearch} style={{ padding: 10, marginTop: 5 }}>
+                        <Icon name="search" size={22} style={styles.icon} />
+                    </TouchableOpacity>
+                </>
+            )}
 
-                <TouchableOpacity onPress={() => handlePress('Menu')} style={{padding: 10, marginTop:5}}>
-                    <GridIcon width={25} height={25}/>
-                </TouchableOpacity>
+            <TouchableOpacity onPress={handleMenuPress} style={styles.menuIcon}>
+                <GridIcon width={25} height={25} />
+            </TouchableOpacity>
+
+            {menuVisible && (
+                <View style={styles.menu}>
+                    <Menu/>
+                </View>
+            )}
         </View>
     );
-};
+});
 
-// Styles for the NavigationBar component
 const styles = {
-    container: {
+    navContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         backgroundColor: '#21262f',
         paddingHorizontal: 16,
         height: 70,
+        zIndex: 999,
     },
     appName: {
         fontSize: 30,
         color: 'white',
         fontFamily: 'titleFont',
-        marginTop: 5,
-    },
-    iconsContainer: {
-        flexDirection: 'row',
         marginTop: 5,
     },
     icon: {
@@ -108,11 +141,27 @@ const styles = {
     searchBar: {
         backgroundColor: 'white',
         borderRadius: 5,
-        flex:1,
+        flex: 1,
         height: 35,
         paddingHorizontal: 15,
         marginTop: 5,
-    }
+    },
+    menuIcon: {
+        marginTop: 5,
+        padding: 10,
+        position: 'relative',
+    },
+    menu: {
+        position: 'absolute',
+        top: 70,
+        right: 10,
+        width: 250,
+        backgroundColor: '#21262f',
+        borderWidth: 2,
+        borderRadius: 20,
+        borderColor: '#f8adb3',
+    },
+
 };
 
 export default NavigationBar;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import {CardStyleInterpolators, createStackNavigator} from '@react-navigation/stack';
+import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
 
 // Import custom components and utilities
 import Home from "./src/screens/Home";
@@ -8,6 +8,13 @@ import Predict from "./src/screens/Predict";
 import { View } from "react-native";
 
 const Stack = createStackNavigator();
+
+const transitionConfig = {
+    animation: 'timing',
+    config: {
+        duration: 500,
+    },
+};
 
 /**
  * The main application component.
@@ -26,19 +33,21 @@ const App = () => {
                     component={Predict}
                     options={{
                         gestureEnabled: true, // Enable gestures
-                        gestureResponseDistance:550, // slide from top to bottom anywhere on the screen to go back
-                        gestureDirection: 'vertical', // Allow vertical gestures
-                        // cardOverlayEnabled: true,
-                        cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter, // Slide from the bottom
+                        gestureResponseDistance: 550,
+                        gestureDirection: 'vertical',
+                        cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
                         cardOverlay: () => (
                             <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.7)' }} />
                         ),
                         headerTintColor: '#f8adb3',
-                        headerTitle:'',
+                        headerTitle: '',
                         headerStyle: {
                             backgroundColor: 'black',
                         },
-
+                        transitionSpec: {
+                            open: transitionConfig,
+                            close: transitionConfig,
+                        },
                     }}
                 />
             </Stack.Navigator>
