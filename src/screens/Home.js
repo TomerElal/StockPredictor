@@ -10,7 +10,7 @@ import {
 import FontLoader from "../utils/FontLoader";
 import {FetchStockData} from "../utils/FetchStockData";
 import Loading from "./Loading";
-import SearchedStock from "../components/SearchedStock";
+import SearchedStock from "./SearchedStock";
 import NavigationBar from "../components/NavigationBar";
 import StockContainer from "../components/StockContainer";
 import stocks from "../utils/stocks.json";

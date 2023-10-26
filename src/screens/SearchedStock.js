@@ -1,5 +1,5 @@
 import React from 'react';
-import StockContainer from "./StockContainer";
+import StockContainer from "../components/StockContainer";
 import {StyleSheet, Text, TouchableOpacity} from "react-native";
 
 function SearchedStock(props) {
