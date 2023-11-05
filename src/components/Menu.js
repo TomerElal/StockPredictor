@@ -1,7 +1,7 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity} from "react-native";
 
-function Menu() {
+function Menu({onEditWatchlist}) {
 
     const handleMenuItemPress = (option) => {
         // Handle menu item press here
@@ -11,15 +11,15 @@ function Menu() {
     };
     return (
         <>
-            <TouchableOpacity onPress={() => handleMenuItemPress('Option 1')} style={styles.menuItem}>
-                <Text style={styles.menuItemText}>Option 1</Text>
+            <TouchableOpacity onPress={() => onEditWatchlist()} style={styles.menuItem}>
+                <Text style={styles.menuItemText}>Edit your watchlist</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => handleMenuItemPress('Option 2')} style={styles.menuItem}>
-                <Text style={styles.menuItemText}>Option 2</Text>
+                <Text style={styles.menuItemText}>Change displayed currency</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => handleMenuItemPress('Option 3')}
                               style={[styles.menuItem, {borderBottomWidth: 0,}]}>
-                <Text style={styles.menuItemText}>Option 3</Text>
+                <Text style={styles.menuItemText}>ML description</Text>
             </TouchableOpacity>
         </>
     );

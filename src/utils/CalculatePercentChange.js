@@ -22,22 +22,12 @@ export function CalculatePercentChange(data) {
                     if (currentClose !== undefined) {
                         const percentageChange = ((currentClose - previousClose) / previousClose) * 100;
                         return percentageChange.toFixed(2);
-                    } else {
-                        console.error('Current close price not found.');
                     }
-                } else {
-                    console.error('Close prices not found.');
                 }
-            } else {
-                console.error('Previous close price not found in meta.');
             }
-        } else {
-            console.error('Data not found.');
         }
-
         return null;
     } catch (error) {
-        console.error('Error calculating percentage change:', error);
         return null;
     }
 }

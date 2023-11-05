@@ -1,38 +1,73 @@
-import React, {useState} from 'react';
-import {Text, View} from "react-native";
+import React, {useEffect, useState} from 'react';
+import {ActivityIndicator, Text, View, StyleSheet} from "react-native";
 import axios from "axios";
 
 function ActivatePrediction({ticker}) {
     const [prediction, setPrediction] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    const handlePredict = async () => {
-        try {
-            // Replace the URL with the address of your Flask app
-            const response = await axios.post('http://172.20.10.2:5000/predict', {
-                features: ticker,
-            });
-            setPrediction(response.data.prediction);
-        } catch (error) {
-            console.error('Error predicting stock:', error);
-        }
-    };
-    handlePredict();
-    return (
-        <View style={{alignContent:'center'}}>
-            <Text style={{color:'white', padding:10}}>
-                Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget
-                dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes,
-                nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis,
-                sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec,
-                vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo.
-            </Text>
-            <View style={{justifyContent:'center', flexDirection:'row', paddingTop: 10}}>
-                <Text style={{fontSize:24, color:'white',}}>Prediction: </Text>
-                <Text style={{fontSize:24, color:'#f8adb3',}}>{prediction}% of stock increase.</Text>
+    useEffect(() => {
+        const handlePredict = async () => {
+            try {
+                // Replace the URL with the address of your Flask app
+                const response = await axios.post('http://192.168.1.58:5000/predict', {
+                    features: ticker,
+                });
+                setPrediction(response.data.prediction);
+            } catch (error) {
+                console.error('Error predicting stock:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        handlePredict();
+    }, []);
+
+    if (loading) {
+        // Show a loading indicator while fetching data
+        return (
+            <View style={styles.LoadingContainer}>
+                <ActivityIndicator size="large" color="#f8adb3"/>
+                <Text style={styles.LoadingText}>
+                    Calculating Stock Prediction...
+                </Text>
             </View>
-        </View>
+        );
+    }
 
+    return (
+        <View style={styles.PredictContainer}>
+            <Text style={styles.PredictText}>The stock will {prediction >= 0 ? "rise" : "drop"} by
+                approximately </Text>
+            <Text style={[styles.PredictText, {color:prediction >= 0? "green":"red"}]}>{prediction}%</Text>
+            <Text style={styles.PredictText}> within a period of two years</Text>
+        </View>
     );
 }
 
+const styles = StyleSheet.create({
+    LoadingContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingTop: 10,
+    },
+    LoadingText: {
+        fontSize: 18, color: '#f8adb3',
+        textAlign: 'center',
+        marginTop: 10,
+        fontFamily: 'titleFont',
+    },
+    PredictContainer: {
+        alignContent: 'center',
+        justifyContent: 'center',
+        flexDirection: 'column',
+        padding:10,
+    },
+    PredictText: {
+        color: '#f8adb3',
+        textAlign: 'center',
+        fontFamily: 'titleFont',
+        fontSize:24,
+    }
+})
 export default ActivatePrediction;

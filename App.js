@@ -1,18 +1,18 @@
-import React from 'react';
+import React, {} from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
 
 // Import custom components and utilities
 import Home from "./src/screens/Home";
-import Predict from "./src/screens/Predict";
-import { View } from "react-native";
+import {View} from "react-native";
+import StockDetails from "./src/screens/StockDetails";
 
 const Stack = createStackNavigator();
 
 const transitionConfig = {
     animation: 'timing',
     config: {
-        duration: 500,
+        duration: 600,
     },
 };
 
@@ -27,13 +27,16 @@ const App = () => {
     return (
         <NavigationContainer>
             <Stack.Navigator>
-                <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
+                <Stack.Screen name="Home"
+                              component={Home}
+                              options={{ headerShown: false }}/>
                 <Stack.Screen
-                    name="PredictScreen"
-                    component={Predict}
+                    name="StockDetailsScreen"
+                    component={StockDetails}
                     options={{
                         gestureEnabled: true, // Enable gestures
-                        gestureResponseDistance: 550,
+                        gestureResponseDistance: 450,
+                        gestureVelocityImpact:2000,
                         gestureDirection: 'vertical',
                         cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
                         cardOverlay: () => (

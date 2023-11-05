@@ -21,10 +21,11 @@ function convertDataToLineChartData(data) {
     }
 
     // Create an array of data points with timestamp (x-axis) and price (y-axis).
-    return timestamps.map((timestamp, index) => ({
+    const graphData = timestamps.map((timestamp, index) => ({
         x: timestamp,
         y: prices[index],
     }));
+    return graphData.filter((data) => data.y !== null);
 }
 
 export default convertDataToLineChartData;

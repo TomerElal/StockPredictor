@@ -1,15 +1,54 @@
-import React from 'react';
-import {Button, SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {Button, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import PointerAreaChart from "../utils/PointerAreaChart";
-import ActivatePrediction from "../utils/ActivatePrediction";
+import EventEmitter from 'react-native-eventemitter';
+import Icon from "react-native-vector-icons/FontAwesome5";
 
-const Predict = ({route, navigation}) => {
-    const {ticker, companyName, percentageChange, graphData, currency, exchDisp} = route.params;
+const StockDetails = ({route, navigation}) => {
+    const {ticker, companyName, percentageChange, graphData, currency, exchDisp, companyDescription, userStocks} = route.params;
+    const [isTickerInWatchlist,setIsTickerInWatchlist] = useState(userStocks.includes(ticker));
     const openPrice = graphData[0].y.toFixed(2);
     const closePrice = graphData[graphData.length - 1].y.toFixed(2);
     const yValues = graphData.map(item => item.y);
     const minVal = Math.min(...yValues);
     const maxVal = Math.max(...yValues);
+
+    const handleAddToWatchlist = () => {
+        EventEmitter.emit('addToWatchlistEvent', [ticker]);
+        setIsTickerInWatchlist(!isTickerInWatchlist);
+    };
+    const handleRemoveFromWatchlist = () => {
+        EventEmitter.emit('removeFromWatchlistEvent', ticker);
+        setIsTickerInWatchlist(!isTickerInWatchlist);
+    };
+    const handleHomeReturn = () => {
+        EventEmitter.emit('homeReturnEvent');
+        navigation.goBack();
+    };
+
+    useEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                isTickerInWatchlist ? (
+                    <TouchableOpacity onPress={handleRemoveFromWatchlist} style={{flexDirection:'row', marginRight:10,}}>
+                        <Text style={styles.headerButtons}>Remove </Text>
+                        <Text style={styles.headerButtons}>from Watchlist</Text>
+                    </TouchableOpacity>
+                ) : (
+                    <TouchableOpacity onPress={handleAddToWatchlist}>
+                        <Text style={styles.headerButtons}>Add to Watchlist</Text>
+                    </TouchableOpacity>
+                )
+            ),
+            headerLeft: () => (
+                <TouchableOpacity onPress={handleHomeReturn} style={{flexDirection:'row'}}>
+                    <Icon name={'chevron-left'} color={'#f8adb3'} size={20} style={{padding:3, paddingRight:5}} allowFontScaling={true}/>
+                    <Text style={styles.headerButtons}>Home</Text>
+                </TouchableOpacity>
+            ),
+        });
+    }, [isTickerInWatchlist, navigation]);
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={{paddingRight: 100 , paddingTop: 20, paddingBottom:5}}>
@@ -40,7 +79,9 @@ const Predict = ({route, navigation}) => {
                     <Text style={{fontSize: 14, color: 'gray'}}>{currency}</Text>
                 </View>
             </View>
-            <ActivatePrediction ticker={ticker}/>
+            <Text style={{color:'white', padding:10}}>
+                {companyDescription}
+            </Text>
             <PointerAreaChart props={{dailyData: graphData, changePercentage: percentageChange,
                                       maxVal: maxVal, minVal: minVal}}/>
             <Button title="Close" onPress={() => navigation.goBack()} color={'#f8adb3'}/>
@@ -93,8 +134,13 @@ const styles = StyleSheet.create({
         color: 'gray',
         fontSize: 14,
         padding: 6,
-    }
-
+    },
+    headerButtons:{
+        color: '#f8adb3',
+        fontSize: 20,
+        fontFamily: 'titleFont',
+        marginTop:5,
+    },
 });
 
-export default Predict;
+export default StockDetails;

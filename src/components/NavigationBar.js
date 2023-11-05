@@ -7,7 +7,7 @@ import {
     TextInput,
     Platform,
     UIManager,
-    LayoutAnimation
+    LayoutAnimation, Keyboard
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import GridIcon from '../../assets/icons/GridIcon';
@@ -17,11 +17,13 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
     UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-const NavigationBar = forwardRef(({ onSearchSubmit, onHomeReturn, flatListRef, boolIsHomeScreen }, ref) => {
+const NavigationBar = forwardRef(({ onSearchSubmit, onHomeReturn, flatListRef,
+                                      boolIsHomeScreen, onEditWatchlist, isEditMode}, ref) => {
     const [HomePagePressed, setHomePagePressed] = useState(false);
     const [searchPressed, setSearchPressed] = useState(false);
     const [searchText, setSearchText] = useState('');
     const [menuVisible, setMenuVisible] = useState(false);
+
     const handleMenuPress = () => {
         setSearchPressed(false);
         setMenuVisible(!menuVisible);
@@ -53,7 +55,7 @@ const NavigationBar = forwardRef(({ onSearchSubmit, onHomeReturn, flatListRef, b
     }
 
     function handleSearchInput(text) {
-        setSearchText(text);
+        setSearchText(text.toUpperCase());
     }
 
     function handleSearchSubmit() {
@@ -64,10 +66,25 @@ const NavigationBar = forwardRef(({ onSearchSubmit, onHomeReturn, flatListRef, b
     function closeMenu(){
         setMenuVisible(false);
     }
+    function closeKeyboard(){
+        Keyboard.dismiss();
+    }
 
     useImperativeHandle(ref, () => ({
         closeMenu: closeMenu,
+        closeKeyboard: closeKeyboard,
     }));
+
+    const handleEditWatchlist = () => {
+        onEditWatchlist();
+        setMenuVisible(false);
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
+    }
+
+    function handleDoneEditing() {
+        onEditWatchlist();
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
+    }
 
     return (
         <View style={styles.navContainer}>
@@ -80,6 +97,9 @@ const NavigationBar = forwardRef(({ onSearchSubmit, onHomeReturn, flatListRef, b
                         onChangeText={handleSearchInput}
                         onSubmitEditing={handleSearchSubmit}
                         autoFocus={true}
+                        keyboardAppearance="dark"
+                        autoCapitalize="none"
+                        returnKeyType="search"
                     />
                     <TouchableOpacity onPress={handleSearch} style={{ padding: 10, paddingLeft: 20, marginTop: 5 }}>
                         <Text style={{ color: "#f8adb3" }}>Cancel</Text>
@@ -104,14 +124,30 @@ const NavigationBar = forwardRef(({ onSearchSubmit, onHomeReturn, flatListRef, b
                     </TouchableOpacity>
                 </>
             )}
+            {isEditMode?
+                (<>
+                    <TouchableOpacity onPress={handleDoneEditing} style={styles.menuIcon}>
+                        <Text style={{fontFamily:"titleFont", color:"#f8adb3", fontSize:20, marginTop: 5, marginLeft:10,}}>Done</Text>
+                    </TouchableOpacity>
+                </>)
+            :
+                (<>
 
-            <TouchableOpacity onPress={handleMenuPress} style={styles.menuIcon}>
-                <GridIcon width={25} height={25} />
-            </TouchableOpacity>
+                </>)
+            }
+            {boolIsHomeScreen && !isEditMode?
+                (<>
+                    <TouchableOpacity onPress={handleMenuPress} style={styles.menuIcon}>
+                        <GridIcon width={25} height={25} />
+                    </TouchableOpacity>
+                </>)
+                :
+                (<></>)}
+
 
             {menuVisible && (
                 <View style={styles.menu}>
-                    <Menu/>
+                    <Menu onEditWatchlist={handleEditWatchlist}/>
                 </View>
             )}
         </View>
@@ -133,10 +169,10 @@ const styles = {
         color: 'white',
         fontFamily: 'titleFont',
         marginTop: 5,
+        marginRight: 50,
     },
     icon: {
         color: 'white',
-        marginLeft: 65,
     },
     searchBar: {
         backgroundColor: 'white',
@@ -147,9 +183,9 @@ const styles = {
         marginTop: 5,
     },
     menuIcon: {
-        marginTop: 5,
-        padding: 10,
+        marginTop: 7,
         position: 'relative',
+        marginRight: 10,
     },
     menu: {
         position: 'absolute',
