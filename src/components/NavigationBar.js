@@ -17,8 +17,8 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
     UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-const NavigationBar = forwardRef(({ onSearchSubmit, onHomeReturn, flatListRef,
-                                      boolIsHomeScreen, onEditWatchlist, isEditMode}, ref) => {
+const NavigationBar = forwardRef(({ onSearchSubmit, onHomeReturn, flatListRef, boolIsHomeScreen, onEditWatchlist,
+                                      isEditMode, onPriceOrChangeDisplay, onChangeCurrency, isPriceDisplay}, ref) => {
     const [HomePagePressed, setHomePagePressed] = useState(false);
     const [searchPressed, setSearchPressed] = useState(false);
     const [searchText, setSearchText] = useState('');
@@ -147,7 +147,11 @@ const NavigationBar = forwardRef(({ onSearchSubmit, onHomeReturn, flatListRef,
 
             {menuVisible && (
                 <View style={styles.menu}>
-                    <Menu onEditWatchlist={handleEditWatchlist}/>
+                    <Menu onEditWatchlist={handleEditWatchlist}
+                          onPriceOrChangeDisplay={onPriceOrChangeDisplay}
+                          onChangeCurrency={onChangeCurrency}
+                          isPriceDisplay={isPriceDisplay}
+                          closeMenu={closeMenu}/>
                 </View>
             )}
         </View>
@@ -185,7 +189,7 @@ const styles = {
     menuIcon: {
         marginTop: 7,
         position: 'relative',
-        marginRight: 10,
+        padding:10,
     },
     menu: {
         position: 'absolute',

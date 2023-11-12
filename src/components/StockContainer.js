@@ -1,10 +1,9 @@
-import React, {forwardRef, useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {View, Text, Image, StyleSheet, TouchableOpacity, Modal, TouchableWithoutFeedback} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import EventEmitter from 'react-native-eventemitter';
 
 // Import a custom component
-import CurvedLineChart from "../utils/CurvedLineChart";
+import CurvedLineChart from "./CurvedLineChart";
 import ActivatePrediction from "../utils/ActivatePrediction";
 import Icon from "react-native-vector-icons/FontAwesome";
 
@@ -19,7 +18,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
  * @param {Array} stockData.graphData - Data for the stock's price graph.
  * @returns {JSX.Element} - Rendered component.
  */
-const StockContainer = forwardRef(({
+const StockContainer = (({
                                        stockData,
                                        isEditMode,
                                        onDeleteStock,
@@ -27,14 +26,19 @@ const StockContainer = forwardRef(({
                                        userStocks,
                                        drag,
                                        isActive,
-                                       showLoadDefaultButton
-                                   }, ref) => {
-    const {logo, ticker, companyName, percentageChange, graphData, currency, exchDisp, companyDescription} = stockData;
+                                       showLoadDefaultButton,
+                                       isPriceDisplay,
+                                       currency,
+                                       exchangeRate,
+                                       onUserClickedStock,
+                                   }) => {
+    const {logo, ticker, companyName, percentageChange, graphData, exchDisp, companyDescription, lastPrice} = stockData;
     const navigation = useNavigation();
     const [isModalVisible, setModalVisible] = useState(false);
 
 
     const openStockDetails = () => {
+        onUserClickedStock();
         navigation.navigate('StockDetailsScreen', {
             ticker: ticker,
             companyName: companyName,
@@ -44,6 +48,7 @@ const StockContainer = forwardRef(({
             exchDisp: exchDisp,
             companyDescription: companyDescription,
             userStocks: userStocks,
+            exchangeRate: exchangeRate,
         });
     };
 
@@ -70,7 +75,7 @@ const StockContainer = forwardRef(({
                     <Text style={styles.stockName}>{ticker}</Text>
                     <Text style={styles.companyName}>{companyName}</Text>
                     <Text style={{fontSize: 14, color: percentageChange >= 0 ? '#39FF13' : '#eb5779'}}>
-                        {percentageChange + '%'}
+                        {isPriceDisplay? (lastPrice * exchangeRate).toFixed(2) : percentageChange + '%'}
                     </Text>
                 </View>
             </TouchableOpacity>
@@ -172,12 +177,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'black', // Customize the background color
         borderRadius: 10, // Add rounded corners for decoration
         padding: 20,
-    },
-    modalText: {
-        color: 'black', // Customize text color
-        fontSize: 20,
-        textAlign: 'center',
-        marginBottom: 20,
     },
     closeButton: {
         color: 'black', // Customize close button text color

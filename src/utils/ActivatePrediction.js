@@ -10,7 +10,7 @@ function ActivatePrediction({ticker}) {
         const handlePredict = async () => {
             try {
                 // Replace the URL with the address of your Flask app
-                const response = await axios.post('http://192.168.1.58:5000/predict', {
+                const response = await axios.post('http://172.20.10.2:5000/predict', {
                     features: ticker,
                 });
                 setPrediction(response.data.prediction);

@@ -2,7 +2,8 @@ import React from 'react';
 import {View} from "react-native";
 import { LineChart } from "react-native-gifted-charts"
 import {Text} from 'react-native';
-import ConvertDataToAreaChartData from "./ConvertDataToAreaChartData";
+import ConvertDataToAreaChartData from "../utils/ConvertDataToAreaChartData";
+import * as Haptics from "expo-haptics";
 
 function decideColor(changePercentage, obj) {
     if (changePercentage >= 0) {
@@ -26,29 +27,30 @@ function decideColor(changePercentage, obj) {
     }
 }
 function PointerAreaChart({props}) {
-    const {dailyData, changePercentage, maxVal, minVal} = props;
+    const {dailyData, changePercentage, maxVal, minVal, range} = props;
     return (
         <View
             style={{
-                paddingTop: 25,
                 paddingBottom: 55,
-                paddingLeft: 25,
+                paddingLeft: 5,
             }}>
             <LineChart
                 areaChart
-                data={ConvertDataToAreaChartData(dailyData)}
+                data={ConvertDataToAreaChartData(dailyData, range)}
+                onFocus={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
+                onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
                 showScrollIndicator
                 rotateLabel
-                width={300}
+                width={355}
                 yAxisOffset={Number(minVal)}
                 showFractionalValues={true}
                 roundToDigits={2}
                 maxValue={maxVal - minVal}
                 isAnimated={true}
-                animationDuration={1500}
+                animationDuration={1000}
                 hideDataPoints
                 adjustToWidth={true}
-                spacing={3.5}
+                spacing={5}
                 color={decideColor(changePercentage, 'line')}
                 yAxisLabelWidth={48}
                 thickness={2}
@@ -65,14 +67,18 @@ function PointerAreaChart({props}) {
                 yAxisTextStyle={{color: 'gray'}}
                 yAxisSide='right'
                 xAxisColor="lightgray"
+
                 pointerConfig={{
                     pointerStripHeight: 200,
+                    activatePointersOnLongPress: true,
+                    autoAdjustPointerLabelPosition:true,
+                    showPointerStrip:true,
+                    stripOverPointer:true,
                     pointerStripColor: 'lightgray',
                     pointerStripWidth: 2,
                     pointerColor: 'lightgray',
                     radius: 6,
                     pointerLabelWidth: 0,
-                    stripOverPointer:true,
                     pointerLabelComponent: items => {
                         const price = (Number(items[0].value) + minVal).toFixed(2)
                         return (
@@ -89,7 +95,7 @@ function PointerAreaChart({props}) {
                                         {'$' + price}
                                     </Text>
                                 </View>
-                                <Text style={{color: 'white', fontSize: 16, marginBottom:0,textAlign:'center'}}>
+                                <Text style={{color: 'white', fontSize: 16,textAlign:'center'}}>
                                     {items[0].date}
                                 </Text>
 

@@ -18,9 +18,27 @@ import EventEmitter from "react-native-eventemitter";
 import AddStocksModal from "../components/AddStocksModal";
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import SearchStocks from "../utils/SearchStocks";
+import * as Haptics from 'expo-haptics';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
+function LoadDefaultStocks(props) {
+    return <View style={{flex: 1, justifyContent: 'center'}}>
+        <TouchableOpacity onPress={props.onPress} style={{
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 10,
+            marginBottom: props.editMode ? 50 : 0,
+        }}>
+            <Text style={{
+                color: "#f8adb3",
+                fontSize: 22,
+                fontFamily: "titleFont"
+            }}>Load Default StockList</Text>
+        </TouchableOpacity>
+    </View>;
 }
 
 function Home() {
@@ -31,12 +49,16 @@ function Home() {
     const [refreshing, setRefreshing] = useState(false);
     const flatListRef = useRef(null);
     const NavigationBarRef = React.useRef();
-    const StockContainerRef = React.useRef();
     const [userStocks, setUserStocks] = useState([]);
     const [loadingCustomStocks, setLoadingCustomStocks] = useState(true);
     const [isEditMode, setIsEditMode] = useState(false);
     const [userAddingStocks, setUserAddingStocks] = useState(false);
     const [showLoadDefaultButton, setShowLoadDefaultButton] = useState(true);
+    const [isPriceDisplay, setIsPriceDisplay] = useState(false);
+    const [userClickedStock, setUserClickedStock] = useState(false);
+    const [flag, setFlag] = useState(false);
+    const [currentCurrency, setCurrentCurrency] = useState('USD');
+    const [currentExchangeRate, setCurrentExchangeRate] = useState(1);
 
     const handleRefresh = async () => {
         setRefreshing(true);
@@ -50,15 +72,15 @@ function Home() {
     useEffect(() => {
         const loadCustomStocksData = async () => {
             try {
-                const customStocksJson = await AsyncStorage.getItem('userStocks');
-                if (customStocksJson) {
-                    await setUserStocks(JSON.parse(customStocksJson));
+                const customStocksJson = await AsyncStorage.getItem('stocks');
+                const stockList = JSON.parse(customStocksJson);
+                if (customStocksJson && stockList.length > 0) {
+                    await setUserStocks(stockList);
                     setLoadingCustomStocks(false);
-
                 } else {
                     // Save the default custom stocks in AsyncStorage
                     setUserStocks(stocks)
-                    await AsyncStorage.setItem('userStocks', JSON.stringify(stocks));
+                    await AsyncStorage.setItem('stocks', JSON.stringify(stocks));
                     setLoadingCustomStocks(false);
                 }
             } catch (error) {
@@ -114,12 +136,12 @@ function Home() {
     };
 
     useEffect(() => {
-        const handleAddToWatchlist = (symbol) => {
-            handleStocksAdd(symbol);
+        const handleAddToWatchlist = async (symbol) => {
+            await handleStocksAdd(symbol);
         };
 
-        const handleRemoveFromWatchlist = (symbol) => {
-            handleStockDelete(symbol);
+        const handleRemoveFromWatchlist = async (symbol) => {
+            await handleStockDelete(symbol);
         };
 
         const handleHomeReturn = () => {
@@ -137,42 +159,38 @@ function Home() {
             EventEmitter.off('removeFromWatchlistEvent', handleRemoveFromWatchlist);
             EventEmitter.off('homeReturnEvent', handleHomeReturn);
         };
-    }, [userStocks, userSearchedStock]);
+    }, [userClickedStock]);
 
     const handleStockDelete = async (symbol) => {
-        const updatedCustomStocks = [...userStocks];
-        const index = updatedCustomStocks.indexOf(symbol);
-        if (index !== -1) {
-            updatedCustomStocks.splice(index, 1); // Remove the stock
-        }
-        setUserStocks(updatedCustomStocks);
-        console.log(symbol, 'removed')
-        setStocksData(stocksData.filter(item => item.ticker !== symbol));
+        const updatedCustomStocks = [];
+        userStocks.forEach((stock) => {
+            if (stock !== symbol) {
+                updatedCustomStocks.push(stock);
+            }
+        })
+        await setUserStocks(updatedCustomStocks);
+        await setStocksData(stocksData.filter(item => item.ticker !== symbol));
         setShowLoadDefaultButton(true);
-        // Save the updated custom stocks in AsyncStorage
-        await AsyncStorage.setItem('userStocks', JSON.stringify(updatedCustomStocks));
+        await AsyncStorage.setItem('stocks', JSON.stringify(updatedCustomStocks));
     };
     const handleStocksAdd = async (symbolsToAdd) => {
         const updatedCustomStocks = [...userStocks];
         setUserAddingStocks(false);
+        const customStocksJson = await AsyncStorage.getItem('stocks');
+        const stockList = JSON.parse(customStocksJson);
+        const stocksDataList = stocksData.filter(item => stockList.includes(item.ticker));
         for (const symbol of symbolsToAdd) {
             if (!updatedCustomStocks.includes(symbol)) {
                 updatedCustomStocks.unshift(symbol); // Add the stock
             }
         }
-
-        await setUserStocks(updatedCustomStocks);
-
+        setUserStocks(updatedCustomStocks);
         const stockPromises = symbolsToAdd.map((symbol) => FetchStockData(symbol, '5m'));
         const newStockData = await Promise.all(stockPromises);
-
-        console.log('Added stocks:', symbolsToAdd);
-
-        setStocksData([...newStockData, ...stocksData]); // Add the new data to the existing data
+        await setStocksData([...newStockData, ...stocksDataList]);
         setShowLoadDefaultButton(true);
         // Save the updated custom stocks in AsyncStorage
-        await AsyncStorage.setItem('userStocks', JSON.stringify(updatedCustomStocks));
-
+        await AsyncStorage.setItem('stocks', JSON.stringify(updatedCustomStocks));
     };
 
 
@@ -183,22 +201,22 @@ function Home() {
     const toggleModal = () => {
         setUserAddingStocks(!userAddingStocks);
     };
-    const handleStockOrderChange = (data) => {
+    const handleStockOrderChange = async (data) => {
         // Update the order of stocks based on user's interaction
-        setUserStocks(data.map((item) => item.ticker));
+        setStocksData(data);
+        const newOrder = data.map((item) => item.ticker)
+        await setUserStocks(newOrder);
+        setFlag(!flag);
     };
-
-    const handleStockOrderSave = async () => {
-        // Save the updated order of stocks to AsyncStorage
-        await AsyncStorage.setItem('userStocks', JSON.stringify(userStocks));
-    };
-
-    // Return a cleanup function to save the stock order when the component unmounts
     useEffect(() => {
-        return () => {
-            handleStockOrderSave();
+        const handleStockOrderSave = async () => {
+            // Update the order of stocks based on user's interaction
+            setStocksData(stocksData);
+            await setUserStocks(userStocks);
+            await AsyncStorage.setItem('stocks', JSON.stringify(userStocks));
         };
-    }, [userStocks]);
+        handleStockOrderSave();
+    }, [flag]);
 
     const loadDefaultStockList = async () => {
         setLoading(true);
@@ -206,16 +224,38 @@ function Home() {
         setUserStocks(defaultStockList);
         const stockPromises = defaultStockList.map((ticker) => FetchStockData(ticker, '5m'));
         const stocksData = await Promise.all(stockPromises);
-        await AsyncStorage.setItem('userStocks', JSON.stringify(defaultStockList));
+        await AsyncStorage.setItem('stocks', JSON.stringify(defaultStockList));
         setStocksData(stocksData);
         setLoading(false);
         setShowLoadDefaultButton(false);
     };
 
+    function handlePriceOrChangeDisplay() {
+        setIsPriceDisplay(!isPriceDisplay)
+    }
+
+    async function handleChangeCurrency(currency) {
+        const exchangeFromUSDtoCurrencyUrl = `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=USD&to_currency=${currency}&apikey=NEYJGBOIAFMI8XSV`;
+
+        try {
+            const [exchangeFromUSDtoCurrencyResponse] = await Promise.all([
+                fetch(exchangeFromUSDtoCurrencyUrl).then((response) => response.json()),
+            ]);
+            const exchangeRate = exchangeFromUSDtoCurrencyResponse["Realtime Currency Exchange Rate"]["5. Exchange Rate"];
+            setCurrentCurrency(currency);
+            setCurrentExchangeRate(exchangeRate)
+        } catch (error) {
+            return null;
+        }
+    }
+
+    function handleUserClickedStock() {
+        setUserClickedStock(!userClickedStock)
+    }
+
     if (loading) {
         return (<Loading/>);
     }
-
 
     return (
         <FontLoader>
@@ -226,6 +266,9 @@ function Home() {
                                boolIsHomeScreen={!userSearchedStock}
                                onEditWatchlist={handleEditWatchlist}
                                isEditMode={isEditMode}
+                               onPriceOrChangeDisplay={handlePriceOrChangeDisplay}
+                               onChangeCurrency={handleChangeCurrency}
+                               isPriceDisplay={isPriceDisplay}
                                ref={NavigationBarRef}/>
                 <View style={styles.container} onTouchStart={() => callNavigationBarChildFunction("closeMenu")}>
                     {(isEditMode) ?
@@ -243,7 +286,7 @@ function Home() {
                                     <View style={styles.modalContainer}>
                                         <TouchableWithoutFeedback>
                                             <View style={styles.modalContent}>
-                                                <AddStocksModal onAddStocks={handleStocksAdd}/>
+                                                <AddStocksModal onAddStocks={handleStocksAdd} userStocks={userStocks}/>
                                             </View>
                                         </TouchableWithoutFeedback>
                                     </View>
@@ -254,13 +297,19 @@ function Home() {
                     {userSearchedStock ?
                         (<SearchedStock searchedStockData={searchedStockData}
                                         handleHomeReturnPress={handleHomeReturnPress}
-                                        userStocks={userStocks}/>)
-                        :
-                        (
+                                        userStocks={userStocks}
+                                        isPriceDisplay={isPriceDisplay}
+                                        currency={currentCurrency}
+                                        onUserClickedStock={handleUserClickedStock}
+                                        exchangeRate={currentExchangeRate}/>)
+                        : <></>}
+                    {stocksData.length > 0 && !userSearchedStock ?
+                        <>
                             <DraggableFlatList
                                 onScrollBeginDrag={() => callNavigationBarChildFunction("closeKeyboard")}
                                 ref={flatListRef}
                                 data={stocksData}
+                                onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
                                 keyExtractor={(item) => item.ticker}
                                 renderItem={({item, getIndex, drag, isActive}) => {
                                     return (<><StockContainer
@@ -272,33 +321,29 @@ function Home() {
                                             drag={drag}
                                             isActice={isActive}
                                             showLoadDefaultButton={showLoadDefaultButton}
-                                            ref={StockContainerRef}/>
-                                            {getIndex() === userStocks.length - 1 && showLoadDefaultButton ? <View>
-                                                <TouchableOpacity onPress={loadDefaultStockList} style={{
-                                                    justifyContent: 'center',
-                                                    alignItems: 'center',
-                                                    padding: 10,
-                                                    marginBottom: isEditMode ? 50 : 0,
-                                                }}>
-                                                    <Text style={{
-                                                        color: '#f8adb3',
-                                                        fontSize: 22,
-                                                        fontFamily: 'titleFont'
-                                                    }}>Load Default StockList</Text>
-                                                </TouchableOpacity>
-                                            </View> : <></>}</>
+                                            isPriceDisplay={isPriceDisplay}
+                                            currency={currentCurrency}
+                                            exchangeRate={currentExchangeRate}
+                                            onUserClickedStock={handleUserClickedStock}
+                                        />
+                                            {getIndex() === userStocks.length - 1 && showLoadDefaultButton ?
+                                                <LoadDefaultStocks onPress={loadDefaultStockList}
+                                                                   editMode={isEditMode}/> : <></>}</>
                                     )
                                 }}
-                                onDragEnd={({data}) => setStocksData(data)}
+                                onDragEnd={({data}) => handleStockOrderChange(data)}
                                 refreshControl={
                                     <RefreshControl
                                         refreshing={refreshing}
                                         onRefresh={handleRefresh}
                                         tintColor="#f8adb3"
                                     />}
-                            />)
+                            />
+                            {userStocks.length === 0 ? <LoadDefaultStocks onPress={loadDefaultStockList}
+                                                                          editMode={isEditMode}/> : <></>}
+                        </>
+                        : <></>
                     }
-
                 </View>
             </SafeAreaView>
         </FontLoader>
@@ -317,8 +362,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
     },
     modalContent: {
-        width: 300, // Customize the width of the panel
-        height: 150, // Customize the width of the panel
+        width: 330, // Customize the width of the panel
+        height: 180, // Customize the width of the panel
         backgroundColor: '#21262f', // Customize the background color
         borderRadius: 10, // Add rounded corners for decoration
         padding: 20,

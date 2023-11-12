@@ -28,7 +28,11 @@ function SearchedStock(props) {
                                                 isEditMode={false}
                                                 index={()=>{if (index===0) return 0}}
                                                 userStocks={props.userStocks}
-                                                showLoadDefaultButton={false}/>}
+                                                showLoadDefaultButton={false}
+                                                isPriceDisplay={props.isPriceDisplay}
+                                                currency={props.currency}
+                                                onUserClickedStock = {props.onUserClickedStock}
+                                                exchangeRate={props.exchangeRate}/>}
                 refreshControl={
                     <RefreshControl
                         refreshing={refreshing}
