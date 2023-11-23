@@ -28,11 +28,7 @@ function Menu({onEditWatchlist, onPriceOrChangeDisplay, onChangeCurrency, isPric
         {currency: 'PLN', state: 'Poland', symbol: 'zł'}, {currency: 'IDR', state: 'Indonesia', symbol: ''},
         {currency: 'THB', state: 'Thailand', symbol: '฿'}, {currency: 'PEN', state: 'Peru', symbol: ''},
         {currency: 'CZK', state: 'Czech Republic', symbol: ''}, {currency: 'TRY', state: 'Turkey', symbol: '₺'},
-        {currency: 'AED', state: 'United Arab Emirates', symbol: 'د.إ'}, {
-            currency: 'RUB',
-            state: 'Russia',
-            symbol: '₽'
-        },
+        {currency: 'AED', state: 'United Arab Emirates', symbol: 'د.إ'},
         {currency: 'COP', state: 'Colombia', symbol: 'COL$'}, {currency: 'BHD', state: 'Bahrain', symbol: '.د.ب'},
         {currency: 'RON', state: 'Romania', symbol: ''}, {currency: 'ARS', state: 'Argentina', symbol: 'ARG$'},
     ]

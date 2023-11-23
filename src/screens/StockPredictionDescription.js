@@ -13,7 +13,7 @@ function StockPredictionDescription({route, navigation}) {
                 features from the last calendar year compared to the current time period, among the features you can
                 find: growth in profits, growth in revenues, growth in the company's free cash, growth in reducing
                 the amount of the company's shares, the company's liabilities against assets and
-                a profit multiplier P/E{'\n'}</Text>
+                a profit multiplier P/E.{'\n'}</Text>
             <ScrollView contentContainerStyle={{flexGrow:1, justifyContent:'center'}}>
                 <Text style={{textAlign: 'center', padding:10, paddingTop:0,
                     fontSize: 26, color: 'white', paddingBottom: 20,}}>{companyName} -
