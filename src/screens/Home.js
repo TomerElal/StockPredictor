@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
-    LayoutAnimation, Modal,
+    LayoutAnimation, Modal, Platform,
     RefreshControl,
     SafeAreaView,
     StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback,
@@ -20,14 +20,17 @@ import DraggableFlatList from 'react-native-draggable-flatlist';
 import SearchStocks from "../utils/SearchStocks";
 import * as Haptics from 'expo-haptics';
 
-
+function decideMargin(isEditMode){
+    const margin = isEditMode? 50:0;
+    return Platform.OS === 'ios'? margin:margin+25
+}
 function LoadDefaultStocks(props) {
     return <View style={{flex: 1, justifyContent: 'center'}}>
         <TouchableOpacity onPress={props.onPress} style={{
             justifyContent: "center",
             alignItems: "center",
             padding: 10,
-            marginBottom: props.editMode ? 50 : 0,
+            marginBottom: props.editMode ? decideMargin(true) : decideMargin(false),
         }}>
             <Text style={{
                 color: "#f8adb3",
@@ -365,6 +368,7 @@ function Home() {
                                     )
                                 }}
                                 onDragEnd={({data}) => handleStockOrderChange(data)}
+
                                 refreshControl={
                                     <RefreshControl
                                         refreshing={refreshing}

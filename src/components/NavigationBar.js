@@ -5,7 +5,7 @@ import {
     TouchableOpacity,
     TouchableHighlight,
     TextInput,
-    LayoutAnimation, Keyboard
+    LayoutAnimation, Keyboard, SafeAreaView
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import GridIcon from '../../assets/icons/GridIcon';
@@ -88,7 +88,7 @@ const NavigationBar = forwardRef(({
     }
 
     return (
-        <View style={styles.navContainer}>
+        <SafeAreaView style={styles.navContainer}>
             {searchPressed ? (
                 <>
                     <TextInput
@@ -120,8 +120,8 @@ const NavigationBar = forwardRef(({
                         </Text>
                     </TouchableHighlight>
 
-                    <TouchableOpacity onPress={handleSearch} style={{padding: 10, marginTop: 5}}>
-                        <Icon name="search" size={22} style={styles.icon}/>
+                    <TouchableOpacity onPress={handleSearch} style={{paddingTop: 5, marginRight:5,}}>
+                        <Icon name="search" size={22} style={{color:'white'}}/>
                     </TouchableOpacity>
                 </>
             )}
@@ -132,8 +132,6 @@ const NavigationBar = forwardRef(({
                             fontFamily: "titleFont",
                             color: "#f8adb3",
                             fontSize: 20,
-                            marginTop: 5,
-                            marginLeft: 10,
                         }}>Done</Text>
                     </TouchableOpacity>
                 </>)
@@ -161,7 +159,7 @@ const NavigationBar = forwardRef(({
                           closeMenu={closeMenu}/>
                 </View>
             )}
-        </View>
+        </SafeAreaView>
     );
 });
 
@@ -182,9 +180,6 @@ const styles = {
         marginTop: 5,
         marginRight: 50,
     },
-    icon: {
-        color: 'white',
-    },
     searchBar: {
         backgroundColor: 'white',
         borderRadius: 5,
@@ -195,8 +190,7 @@ const styles = {
     },
     menuIcon: {
         marginTop: 7,
-        position: 'relative',
-        padding: 10,
+
     },
     menu: {
         position: 'absolute',
