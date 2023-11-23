@@ -1,10 +1,10 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
     LayoutAnimation, Modal,
-    Platform, RefreshControl,
+    RefreshControl,
     SafeAreaView,
     StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback,
-    UIManager, View
+    View
 } from "react-native";
 import FontLoader from "../utils/FontLoader";
 import {FetchStockData} from "../utils/FetchStockData";
@@ -20,9 +20,6 @@ import DraggableFlatList from 'react-native-draggable-flatlist';
 import SearchStocks from "../utils/SearchStocks";
 import * as Haptics from 'expo-haptics';
 
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-    UIManager.setLayoutAnimationEnabledExperimental(true);
-}
 
 function LoadDefaultStocks(props) {
     return <View style={{flex: 1, justifyContent: 'center'}}>
@@ -58,7 +55,9 @@ function Home() {
     const [userClickedStock, setUserClickedStock] = useState(false);
     const [flag, setFlag] = useState(false);
     const [currentCurrency, setCurrentCurrency] = useState('USD');
+    const [currentCurrencySymbol, setCurrentCurrencySymbol] = useState('$');
     const [currentExchangeRate, setCurrentExchangeRate] = useState(1);
+    const [isDraggable, setIsDraggable] = useState(true);
 
     const handleRefresh = async () => {
         setRefreshing(true);
@@ -72,11 +71,32 @@ function Home() {
     useEffect(() => {
         const loadCustomStocksData = async () => {
             try {
-                const customStocksJson = await AsyncStorage.getItem('stocks');
-                const stockList = JSON.parse(customStocksJson);
-                if (customStocksJson && stockList.length > 0) {
+                const userStocksChoiceJson = await AsyncStorage.getItem('stocks');
+                const userPriceDisplayChoiceJson = await AsyncStorage.getItem('isPriceDisplay');
+                const userCurrencyChoiceJson = await AsyncStorage.getItem('currency');
+                const currencySymbolJson = await AsyncStorage.getItem('currencySymbol');
+                const exchangeRateJson = await AsyncStorage.getItem('exchangeRate');
+                const stockList = JSON.parse(userStocksChoiceJson);
+                const priceDisplayCondition = JSON.parse(userPriceDisplayChoiceJson);
+                const userCurrencyChoice = JSON.parse(userCurrencyChoiceJson);
+                const currencySymbol = JSON.parse(currencySymbolJson);
+                const exchangeRate = JSON.parse(exchangeRateJson);
+                if (userPriceDisplayChoiceJson) {
+                    await setIsPriceDisplay(priceDisplayCondition)
+                    await AsyncStorage.setItem('isPriceDisplay', userPriceDisplayChoiceJson);
+                }
+                if (userCurrencyChoiceJson) {
+                    await setCurrentCurrency(userCurrencyChoice)
+                    await setCurrentCurrencySymbol(currencySymbol)
+                    await setCurrentExchangeRate(exchangeRate)
+                    await AsyncStorage.setItem('currency', userCurrencyChoiceJson);
+                    await AsyncStorage.setItem('currencySymbol', currencySymbolJson);
+                    await AsyncStorage.setItem('exchangeRate', exchangeRateJson);
+                }
+                if (userStocksChoiceJson && stockList.length > 0) {
                     await setUserStocks(stockList);
                     setLoadingCustomStocks(false);
+                    await AsyncStorage.setItem('stocks', userStocksChoiceJson);
                 } else {
                     // Save the default custom stocks in AsyncStorage
                     setUserStocks(stocks)
@@ -103,6 +123,10 @@ function Home() {
             const stocksData = await Promise.all(stockPromises);
             const filteredStockData = stocksData.filter((data) => data !== null);
             setStocksData(filteredStockData);
+            setIsPriceDisplay(isPriceDisplay);
+            setCurrentCurrency(currentCurrency);
+            setCurrentCurrencySymbol(currentCurrencySymbol);
+            setCurrentExchangeRate(currentExchangeRate);
             setLoading(false);
             LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
         };
@@ -178,7 +202,7 @@ function Home() {
         setUserAddingStocks(false);
         const customStocksJson = await AsyncStorage.getItem('stocks');
         const stockList = JSON.parse(customStocksJson);
-        const stocksDataList = stocksData.filter(item => stockList.includes(item.ticker));
+        const stocksDataList = await Promise.all(stocksData.filter(item => stockList.includes(item.ticker)));
         for (const symbol of symbolsToAdd) {
             if (!updatedCustomStocks.includes(symbol)) {
                 updatedCustomStocks.unshift(symbol); // Add the stock
@@ -203,10 +227,12 @@ function Home() {
     };
     const handleStockOrderChange = async (data) => {
         // Update the order of stocks based on user's interaction
+        setIsDraggable(false)
         setStocksData(data);
         const newOrder = data.map((item) => item.ticker)
         await setUserStocks(newOrder);
         setFlag(!flag);
+        setIsDraggable(true)
     };
     useEffect(() => {
         const handleStockOrderSave = async () => {
@@ -230,11 +256,12 @@ function Home() {
         setShowLoadDefaultButton(false);
     };
 
-    function handlePriceOrChangeDisplay() {
-        setIsPriceDisplay(!isPriceDisplay)
+    async function handlePriceOrChangeDisplay() {
+        await setIsPriceDisplay(!isPriceDisplay)
+        await AsyncStorage.setItem('isPriceDisplay', JSON.stringify(!isPriceDisplay));
     }
 
-    async function handleChangeCurrency(currency) {
+    async function handleChangeCurrency(currency, currencySymbol) {
         const exchangeFromUSDtoCurrencyUrl = `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=USD&to_currency=${currency}&apikey=NEYJGBOIAFMI8XSV`;
 
         try {
@@ -243,7 +270,11 @@ function Home() {
             ]);
             const exchangeRate = exchangeFromUSDtoCurrencyResponse["Realtime Currency Exchange Rate"]["5. Exchange Rate"];
             setCurrentCurrency(currency);
+            setCurrentCurrencySymbol(currencySymbol);
             setCurrentExchangeRate(exchangeRate)
+            await AsyncStorage.setItem('currency', JSON.stringify(currency));
+            await AsyncStorage.setItem('currencySymbol', JSON.stringify(currencySymbol));
+            await AsyncStorage.setItem('exchangeRate', JSON.stringify(exchangeRate));
         } catch (error) {
             return null;
         }
@@ -300,11 +331,12 @@ function Home() {
                                         userStocks={userStocks}
                                         isPriceDisplay={isPriceDisplay}
                                         currency={currentCurrency}
+                                        currencySymbol={currentCurrencySymbol}
                                         onUserClickedStock={handleUserClickedStock}
                                         exchangeRate={currentExchangeRate}/>)
                         : <></>}
                     {stocksData.length > 0 && !userSearchedStock ?
-                        <>
+                        <>{isDraggable ?
                             <DraggableFlatList
                                 onScrollBeginDrag={() => callNavigationBarChildFunction("closeKeyboard")}
                                 ref={flatListRef}
@@ -323,6 +355,7 @@ function Home() {
                                             showLoadDefaultButton={showLoadDefaultButton}
                                             isPriceDisplay={isPriceDisplay}
                                             currency={currentCurrency}
+                                            currencySymbol={currentCurrencySymbol}
                                             exchangeRate={currentExchangeRate}
                                             onUserClickedStock={handleUserClickedStock}
                                         />
@@ -338,7 +371,7 @@ function Home() {
                                         onRefresh={handleRefresh}
                                         tintColor="#f8adb3"
                                     />}
-                            />
+                            /> : <></>}
                             {userStocks.length === 0 ? <LoadDefaultStocks onPress={loadDefaultStockList}
                                                                           editMode={isEditMode}/> : <></>}
                         </>

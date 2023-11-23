@@ -31,6 +31,7 @@ function SearchedStock(props) {
                                                 showLoadDefaultButton={false}
                                                 isPriceDisplay={props.isPriceDisplay}
                                                 currency={props.currency}
+                                                currencySymbol={props.currencySymbol}
                                                 onUserClickedStock = {props.onUserClickedStock}
                                                 exchangeRate={props.exchangeRate}/>}
                 refreshControl={

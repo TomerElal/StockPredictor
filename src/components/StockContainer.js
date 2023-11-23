@@ -19,23 +19,23 @@ import Icon from "react-native-vector-icons/FontAwesome";
  * @returns {JSX.Element} - Rendered component.
  */
 const StockContainer = (({
-                                       stockData,
-                                       isEditMode,
-                                       onDeleteStock,
-                                       index,
-                                       userStocks,
-                                       drag,
-                                       isActive,
-                                       showLoadDefaultButton,
-                                       isPriceDisplay,
-                                       currency,
-                                       exchangeRate,
-                                       onUserClickedStock,
-                                   }) => {
+                             stockData,
+                             isEditMode,
+                             onDeleteStock,
+                             index,
+                             userStocks,
+                             drag,
+                             isActive,
+                             showLoadDefaultButton,
+                             isPriceDisplay,
+                             currency,
+                             currencySymbol,
+                             exchangeRate,
+                             onUserClickedStock,
+                         }) => {
     const {logo, ticker, companyName, percentageChange, graphData, exchDisp, companyDescription, lastPrice} = stockData;
     const navigation = useNavigation();
     const [isModalVisible, setModalVisible] = useState(false);
-
 
     const openStockDetails = () => {
         onUserClickedStock();
@@ -45,6 +45,7 @@ const StockContainer = (({
             percentageChange: percentageChange,
             graphData: graphData,
             currency: currency,
+            currencySymbol: currencySymbol,
             exchDisp: exchDisp,
             companyDescription: companyDescription,
             userStocks: userStocks,
@@ -75,7 +76,7 @@ const StockContainer = (({
                     <Text style={styles.stockName}>{ticker}</Text>
                     <Text style={styles.companyName}>{companyName}</Text>
                     <Text style={{fontSize: 14, color: percentageChange >= 0 ? '#39FF13' : '#eb5779'}}>
-                        {isPriceDisplay? (lastPrice * exchangeRate).toFixed(2) : percentageChange + '%'}
+                        {isPriceDisplay ? (lastPrice * exchangeRate).toFixed(2) + currencySymbol : percentageChange + '%'}
                     </Text>
                 </View>
             </TouchableOpacity>
@@ -107,7 +108,8 @@ const StockContainer = (({
                     <View style={styles.modalContainer}>
                         <TouchableWithoutFeedback>
                             <View style={styles.modalContent}>
-                                <ActivatePrediction ticker={ticker}/>
+                                <ActivatePrediction ticker={ticker} toggleModal={toggleModal}
+                                                    companyName={companyName}/>
                             </View>
                         </TouchableWithoutFeedback>
                     </View>
@@ -170,11 +172,11 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalContent: {
         width: 300, // Customize the width of the panel
-        backgroundColor: 'black', // Customize the background color
+        backgroundColor: '#21262f', // Customize the background color
         borderRadius: 10, // Add rounded corners for decoration
         padding: 20,
     },

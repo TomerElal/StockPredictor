@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {
-    Button,
     TextInput,
     StyleSheet,
     View,
@@ -8,13 +7,10 @@ import {
     Text,
     TouchableOpacity,
     LayoutAnimation,
-    Platform, UIManager, ActivityIndicator
+    ActivityIndicator
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-    UIManager.setLayoutAnimationEnabledExperimental(true);
-}
 
 function AddStocksModal({onAddStocks, userStocks}) {
     const [searchText, setSearchText] = useState('');
@@ -37,7 +33,7 @@ function AddStocksModal({onAddStocks, userStocks}) {
         let stockCompany = '';
         if (matchStocksResponse["quotes"].length > 0) {
             stockName = matchStocksResponse["quotes"][0]["symbol"];
-            if(matchStocksResponse["quotes"][0]["shortname"]){
+            if (matchStocksResponse["quotes"][0]["shortname"]) {
                 stockCompany = matchStocksResponse["quotes"][0]["shortname"].split(/[ ,]+/)[0].toUpperCase();
             }
         }
@@ -56,7 +52,8 @@ function AddStocksModal({onAddStocks, userStocks}) {
     async function handleSearchSubmit() {
         setDisplayInvalidInput('');
         setLoading(true);
-        const inputResult = await checkStockInput(searchText);
+        const searchedStock = searchText.toUpperCase();
+        const inputResult = await checkStockInput(searchedStock);
         if (inputResult.isValid === true) {
             LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
             const tmp = [...stocksToAdd];
@@ -77,16 +74,21 @@ function AddStocksModal({onAddStocks, userStocks}) {
     }
 
     return (
-        <View style={{alignItems: 'center', justifyContent: 'center', }}>
+        <View style={{alignItems: 'center', justifyContent: 'center',}}>
             <View
-                style={{flexDirection: 'row', alignItems: 'center', alignContent:'center',justifyContent: 'space-between', marginBottom: 15}}>
+                style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    alignContent: 'center',
+                    justifyContent: 'space-between',
+                    marginBottom: 15
+                }}>
                 <TextInput
                     style={styles.searchBar}
                     placeholder={"Insert stock symbol/company"}
                     placeholderTextColor={'lightgray'}
                     value={searchText}
                     onChangeText={(text) => {
-                        text = text.toUpperCase();
                         setDisplayInvalidInput('');
                         setSearchText(text)
                     }}
@@ -115,7 +117,7 @@ function AddStocksModal({onAddStocks, userStocks}) {
                 keyboardShouldPersistTaps="handled"
                 keyExtractor={(item) => item}
                 renderItem={({item}) => (
-                    <View style={{height: 50, padding:5}}>
+                    <View style={{height: 50, padding: 5}}>
                         <View style={{
                             backgroundColor: 'rgba(250, 250, 250, 0.3)',
                             borderRadius: 5,
@@ -135,11 +137,13 @@ function AddStocksModal({onAddStocks, userStocks}) {
                 )}
             />
             {displayInvalidInput ?
-                    <Text style={{color:'#eb5779', padding:10, paddingBottom:15,}}>{displayInvalidInput}</Text> : <></>
+                <Text style={{color: '#eb5779', padding: 10, paddingBottom: 15,}}>{displayInvalidInput}</Text> : <></>
             }
             {stocksToAddSize > 0 ?
-                <TouchableOpacity onPress={() => {onAddStocks(stocksToAdd);}}>
-                    <Text style={{color:'#f8adb3', fontFamily:'titleFont', fontSize:22,}}>Add</Text>
+                <TouchableOpacity onPress={() => {
+                    onAddStocks(stocksToAdd);
+                }}>
+                    <Text style={{color: '#f8adb3', fontFamily: 'titleFont', fontSize: 22,}}>Add</Text>
                 </TouchableOpacity> : <></>
             }
         </View>

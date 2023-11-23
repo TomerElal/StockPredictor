@@ -11,7 +11,7 @@ async function SearchStocks(symbol) {
         const matchStocksPromises = matchStocks.map((ticker) => FetchStockData(ticker, '5m'));
         const matchStocksData = await Promise.all(matchStocksPromises);
         return matchStocksData.filter((data) => data !== null);
-    }catch (error){
+    } catch (error) {
         console.error(`Error fetching match stocks for ${symbol}:`, error);
         return null;
     }

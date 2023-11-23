@@ -1,11 +1,12 @@
 import React, {} from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
+import {NavigationContainer} from '@react-navigation/native';
+import {CardStyleInterpolators, createStackNavigator} from '@react-navigation/stack';
 
 // Import custom components and utilities
 import Home from "./src/screens/Home";
 import {View} from "react-native";
 import StockDetails from "./src/screens/StockDetails";
+import StockPredictionDescription from "./src/screens/StockPredictionDescription";
 
 const Stack = createStackNavigator();
 
@@ -29,18 +30,41 @@ const App = () => {
             <Stack.Navigator>
                 <Stack.Screen name="Home"
                               component={Home}
-                              options={{ headerShown: false }}/>
+                              options={{headerShown: false}}/>
                 <Stack.Screen
                     name="StockDetailsScreen"
                     component={StockDetails}
                     options={{
                         gestureEnabled: true, // Enable gestures
                         gestureResponseDistance: 450,
-                        gestureVelocityImpact:2000,
+                        gestureVelocityImpact: 2000,
                         gestureDirection: 'vertical',
                         cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
                         cardOverlay: () => (
-                            <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.7)' }} />
+                            <View style={{flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.7)'}}/>
+                        ),
+                        headerTintColor: '#f8adb3',
+                        headerTitle: '',
+                        headerStyle: {
+                            backgroundColor: 'black',
+                        },
+                        transitionSpec: {
+                            open: transitionConfig,
+                            close: transitionConfig,
+                        },
+                    }}
+                />
+                <Stack.Screen
+                    name="PredictionDetailsScreen"
+                    component={StockPredictionDescription}
+                    options={{
+                        gestureEnabled: true, // Enable gestures
+                        gestureResponseDistance: 450,
+                        gestureVelocityImpact: 2000,
+                        gestureDirection: 'vertical',
+                        cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
+                        cardOverlay: () => (
+                            <View style={{flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.7)'}}/>
                         ),
                         headerTintColor: '#f8adb3',
                         headerTitle: '',

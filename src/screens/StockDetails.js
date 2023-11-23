@@ -12,9 +12,7 @@ import {
 import PointerAreaChart from "../components/PointerAreaChart";
 import EventEmitter from 'react-native-eventemitter';
 import Icon from "react-native-vector-icons/FontAwesome5";
-import {CalculatePercentChange} from "../utils/CalculatePercentChange";
 import convertDataToGraphData from "../utils/ConvertDataToLineChartData";
-import convertDataToLineChartData from "../utils/ConvertDataToLineChartData";
 
 const StockDetails = ({route, navigation}) => {
     const {
@@ -23,13 +21,14 @@ const StockDetails = ({route, navigation}) => {
         percentageChange,
         graphData,
         currency,
+        currencySymbol,
         exchDisp,
+        
         companyDescription,
         userStocks,
         exchangeRate
     } = route.params;
     const [isTickerInWatchlist, setIsTickerInWatchlist] = useState(userStocks.includes(ticker));
-    const [isTickerRemovedOrAdded, setIsTickerRemovedOrAdded] = useState(false);
     const yValues = graphData.map(item => item.y * exchangeRate);
     const modifiedData = graphData.map(item => ({
         ...item,
@@ -38,20 +37,18 @@ const StockDetails = ({route, navigation}) => {
     const [currGraphData, setCurrGraphData] = useState(modifiedData);
     const [currMinVal, setCurrMinVal] = useState(Math.min(...yValues));
     const [currMaxVal, setCurrMaxVal] = useState(Math.max(...yValues));
-    const [currOpenPrice, setCurrOpenPrice] = useState((graphData[0].y * exchangeRate).toFixed(2));
-    const [currClosePrice, setCurrClosePrice] = useState((graphData[graphData.length - 1].y * exchangeRate).toFixed(2));
+    const [currOpenPrice, setCurrOpenPrice] = useState((modifiedData[0].y).toFixed(2));
+    const [currClosePrice, setCurrClosePrice] = useState((modifiedData[modifiedData.length - 1].y).toFixed(2));
     const [currRange, setCurrRange] = useState('1d');
     const [currPercentageChange, setCurrPercentageChange] = useState(percentageChange);
     const [loading, setLoading] = useState(false);
 
     const handleAddToWatchlist = () => {
         EventEmitter.emit('addToWatchlistEvent', [ticker]);
-        setIsTickerRemovedOrAdded(true);
         setIsTickerInWatchlist(!isTickerInWatchlist);
     };
     const handleRemoveFromWatchlist = () => {
         EventEmitter.emit('removeFromWatchlistEvent', ticker);
-        setIsTickerRemovedOrAdded(true);
         setIsTickerInWatchlist(!isTickerInWatchlist);
     };
     const handleHomeReturn = () => {
@@ -68,15 +65,19 @@ const StockDetails = ({route, navigation}) => {
             ]);
             const currGraphData = convertDataToGraphData(graphDataResponse);
             const yValues = currGraphData.map(item => item.y * exchangeRate);
+            const modifiedData = currGraphData.map(item => ({
+                ...item,
+                y: item.y * exchangeRate
+            }));
             setCurrRange(range);
-            setCurrGraphData(currGraphData);
+            setCurrGraphData(modifiedData);
             setCurrMinVal(Math.min(...yValues));
             setCurrMaxVal(Math.max(...yValues));
             const closePrices = graphDataResponse["chart"]["result"][0]["indicators"]["quote"][0]["close"];
             const newPercentageChange = (closePrices[closePrices.length - 1] - closePrices[0]) / closePrices[0] * 100;
             setCurrPercentageChange(newPercentageChange);
-            setCurrOpenPrice(closePrices[0].toFixed(2));
-            setCurrClosePrice(closePrices[closePrices.length - 1].toFixed(2));
+            setCurrOpenPrice((closePrices[0] * exchangeRate).toFixed(2));
+            setCurrClosePrice((closePrices[closePrices.length - 1] * exchangeRate).toFixed(2));
         } catch (error) {
             return null;
         }
@@ -87,7 +88,8 @@ const StockDetails = ({route, navigation}) => {
         navigation.setOptions({
             headerRight: () => (
                 isTickerInWatchlist ? (
-                    <TouchableOpacity onPress={handleRemoveFromWatchlist} style={{flexDirection:'row', marginRight:10,}}>
+                    <TouchableOpacity onPress={handleRemoveFromWatchlist}
+                                      style={{flexDirection: 'row', marginRight: 10,}}>
                         <Text style={styles.headerButtons}>Remove </Text>
                         <Text style={styles.headerButtons}>from Watchlist</Text>
                     </TouchableOpacity>
@@ -98,39 +100,42 @@ const StockDetails = ({route, navigation}) => {
                 )
             ),
             headerLeft: () => (
-                <TouchableOpacity onPress={handleHomeReturn} style={{flexDirection:'row'}}>
-                    <Icon name={'chevron-left'} color={'#f8adb3'} size={20} style={{padding:3, paddingRight:5}} allowFontScaling={true}/>
+                <TouchableOpacity onPress={handleHomeReturn} style={{flexDirection: 'row'}}>
+                    <Icon name={'chevron-left'} color={'#f8adb3'} size={20} style={{padding: 3, paddingRight: 5}}
+                          allowFontScaling={true}/>
                     <Text style={styles.headerButtons}>Home</Text>
                 </TouchableOpacity>
             ),
         });
     }, [isTickerInWatchlist, navigation]);
 
+    const data = [
+        {key: 'open', price: currOpenPrice, label: 'Open'},
+        {key: 'close', price: currClosePrice, label: 'Close'},
+        {key: 'high', price: (currMaxVal).toFixed(2), label: 'High'},
+        {key: 'low', price: (currMinVal).toFixed(2), label: 'Low'},
+        {key: 'change', price: Number(currPercentageChange).toFixed(2) + ' %', label: currRange + ' Change'},
+    ];
+
     return (
         <SafeAreaView style={styles.container}>
-            <View style={{paddingRight: 100, paddingTop: 10, paddingBottom: 5}}>
+            <View style={{paddingRight: 15, paddingTop: 10, paddingBottom: 5}}>
                 <View style={styles.header}>
                     <Text style={styles.stockName}>{ticker}</Text>
                     <Text style={styles.companyName}>{companyName}</Text>
                 </View>
-                <View style={styles.mainPrices}>
-                    <View style={styles.priceInfo}>
-                        <Text style={styles.price}>{currOpenPrice}</Text>
-                        <Text style={styles.PriceText}>Open</Text>
-                    </View>
-                    <View style={styles.priceInfo}>
-                        <Text style={styles.price}>{currClosePrice}</Text>
-                        <Text style={styles.PriceText}>Close</Text>
-                    </View>
-                    <View style={styles.priceInfo}>
-                        <Text style={styles.price}>{(currMaxVal * exchangeRate).toFixed(2)}</Text>
-                        <Text style={styles.PriceText}>High</Text>
-                    </View>
-                    <View style={styles.priceInfo}>
-                        <Text style={styles.price}>{(currMinVal * exchangeRate).toFixed(2)}</Text>
-                        <Text style={styles.PriceText}>Low</Text>
-                    </View>
-                </View>
+                <FlatList
+                    data={data}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    renderItem={({item}) =>
+                        <View style={styles.priceInfo}>
+                            <Text style={styles.price}>{item.price}</Text>
+                            <Text style={styles.PriceText}>{item.label}</Text>
+                        </View>}
+                    keyExtractor={(item) => item.key}
+                    contentContainerStyle={styles.mainPrices}
+                />
                 <View style={{padding: 10, flexDirection: "row"}}>
                     <Text style={{fontSize: 14, color: 'gray'}}>{exchDisp} ◦ </Text>
                     <Text style={{fontSize: 14, color: 'gray'}}>{currency}</Text>
@@ -167,7 +172,7 @@ const StockDetails = ({route, navigation}) => {
                                 marginRight: 10,
                             }}>
                                 <Text style={{
-                                    color: '#f8adb3',
+                                    color: currRange === item.range ? '#eb5779' : '#f8adb3',
                                     fontFamily: 'titleFont',
                                     fontSize: 22,
                                     padding: 10,
@@ -186,7 +191,7 @@ const StockDetails = ({route, navigation}) => {
                 </View>
                 : <PointerAreaChart props={{
                     dailyData: currGraphData, changePercentage: currPercentageChange,
-                    maxVal: currMaxVal, minVal: currMinVal, range: currRange
+                    maxVal: currMaxVal, minVal: currMinVal, range: currRange, currencySymbol: currencySymbol
                 }}/>}
 
             <Button title="Close" onPress={() => navigation.goBack()} color={'#f8adb3'}/>
@@ -229,11 +234,11 @@ const styles = StyleSheet.create({
         borderRightColor: 'gray',
         padding: 10,
         borderBottomRightRadius: 20,
+        alignItems: 'center'
     },
     price: {
         color: 'white',
-        fontSize: 20,
-
+        fontSize: 18,
     },
     PriceText: {
         color: 'gray',

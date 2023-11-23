@@ -5,20 +5,16 @@ import {
     TouchableOpacity,
     TouchableHighlight,
     TextInput,
-    Platform,
-    UIManager,
     LayoutAnimation, Keyboard
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import GridIcon from '../../assets/icons/GridIcon';
 import Menu from "./Menu";
 
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-    UIManager.setLayoutAnimationEnabledExperimental(true);
-}
-
-const NavigationBar = forwardRef(({ onSearchSubmit, onHomeReturn, flatListRef, boolIsHomeScreen, onEditWatchlist,
-                                      isEditMode, onPriceOrChangeDisplay, onChangeCurrency, isPriceDisplay}, ref) => {
+const NavigationBar = forwardRef(({
+                                      onSearchSubmit, onHomeReturn, flatListRef, boolIsHomeScreen, onEditWatchlist,
+                                      isEditMode, onPriceOrChangeDisplay, onChangeCurrency, isPriceDisplay
+                                  }, ref) => {
     const [HomePagePressed, setHomePagePressed] = useState(false);
     const [searchPressed, setSearchPressed] = useState(false);
     const [searchText, setSearchText] = useState('');
@@ -32,7 +28,7 @@ const NavigationBar = forwardRef(({ onSearchSubmit, onHomeReturn, flatListRef, b
 
     function handleHomePress() {
         if (boolIsHomeScreen) {
-            flatListRef.current.scrollToIndex({ index: 0, animated: true });
+            flatListRef.current.scrollToIndex({index: 0, animated: true});
         }
         onHomeReturn();
         setMenuVisible(false);
@@ -55,18 +51,21 @@ const NavigationBar = forwardRef(({ onSearchSubmit, onHomeReturn, flatListRef, b
     }
 
     function handleSearchInput(text) {
-        setSearchText(text.toUpperCase());
+        setSearchText(text);
     }
 
     function handleSearchSubmit() {
         if (searchText) {
-            onSearchSubmit(searchText); // Call the prop function
+            const searchedStock = searchText.toUpperCase();
+            onSearchSubmit(searchedStock); // Call the prop function
         }
     }
-    function closeMenu(){
+
+    function closeMenu() {
         setMenuVisible(false);
     }
-    function closeKeyboard(){
+
+    function closeKeyboard() {
         Keyboard.dismiss();
     }
 
@@ -76,14 +75,16 @@ const NavigationBar = forwardRef(({ onSearchSubmit, onHomeReturn, flatListRef, b
     }));
 
     const handleEditWatchlist = () => {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
         onEditWatchlist();
         setMenuVisible(false);
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
     }
 
     function handleDoneEditing() {
+        if (Platform.OS === 'ios') {
+            LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
+        }
         onEditWatchlist();
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
     }
 
     return (
@@ -101,8 +102,8 @@ const NavigationBar = forwardRef(({ onSearchSubmit, onHomeReturn, flatListRef, b
                         autoCapitalize="none"
                         returnKeyType="search"
                     />
-                    <TouchableOpacity onPress={handleSearch} style={{ padding: 10, paddingLeft: 20, marginTop: 5 }}>
-                        <Text style={{ color: "#f8adb3" }}>Cancel</Text>
+                    <TouchableOpacity onPress={handleSearch} style={{padding: 10, paddingLeft: 20, marginTop: 5}}>
+                        <Text style={{color: "#f8adb3"}}>Cancel</Text>
                     </TouchableOpacity>
                 </>
             ) : (
@@ -112,33 +113,39 @@ const NavigationBar = forwardRef(({ onSearchSubmit, onHomeReturn, flatListRef, b
                         onPressIn={handlePressIn}
                         onPressOut={handlePressOut}
                         underlayColor="transparent"
-                        style={{ padding: 10 }}
+                        style={{padding: 10}}
                     >
-                        <Text style={[styles.appName, { color: HomePagePressed ? '#f8adb3' : 'white' }]}>
+                        <Text style={[styles.appName, {color: HomePagePressed ? '#f8adb3' : 'white'}]}>
                             Stock Predictor
                         </Text>
                     </TouchableHighlight>
 
-                    <TouchableOpacity onPress={handleSearch} style={{ padding: 10, marginTop: 5 }}>
-                        <Icon name="search" size={22} style={styles.icon} />
+                    <TouchableOpacity onPress={handleSearch} style={{padding: 10, marginTop: 5}}>
+                        <Icon name="search" size={22} style={styles.icon}/>
                     </TouchableOpacity>
                 </>
             )}
-            {isEditMode?
+            {isEditMode ?
                 (<>
                     <TouchableOpacity onPress={handleDoneEditing} style={styles.menuIcon}>
-                        <Text style={{fontFamily:"titleFont", color:"#f8adb3", fontSize:20, marginTop: 5, marginLeft:10,}}>Done</Text>
+                        <Text style={{
+                            fontFamily: "titleFont",
+                            color: "#f8adb3",
+                            fontSize: 20,
+                            marginTop: 5,
+                            marginLeft: 10,
+                        }}>Done</Text>
                     </TouchableOpacity>
                 </>)
-            :
+                :
                 (<>
 
                 </>)
             }
-            {boolIsHomeScreen && !isEditMode?
+            {boolIsHomeScreen && !isEditMode ?
                 (<>
                     <TouchableOpacity onPress={handleMenuPress} style={styles.menuIcon}>
-                        <GridIcon width={25} height={25} />
+                        <GridIcon width={25} height={25}/>
                     </TouchableOpacity>
                 </>)
                 :
@@ -189,7 +196,7 @@ const styles = {
     menuIcon: {
         marginTop: 7,
         position: 'relative',
-        padding:10,
+        padding: 10,
     },
     menu: {
         position: 'absolute',

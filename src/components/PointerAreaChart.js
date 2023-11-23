@@ -1,6 +1,6 @@
 import React from 'react';
 import {View} from "react-native";
-import { LineChart } from "react-native-gifted-charts"
+import {LineChart} from "react-native-gifted-charts"
 import {Text} from 'react-native';
 import ConvertDataToAreaChartData from "../utils/ConvertDataToAreaChartData";
 import * as Haptics from "expo-haptics";
@@ -26,8 +26,9 @@ function decideColor(changePercentage, obj) {
         }
     }
 }
+
 function PointerAreaChart({props}) {
-    const {dailyData, changePercentage, maxVal, minVal, range} = props;
+    const {dailyData, changePercentage, maxVal, minVal, range, currencySymbol} = props;
     return (
         <View
             style={{
@@ -49,7 +50,6 @@ function PointerAreaChart({props}) {
                 isAnimated={true}
                 animationDuration={1000}
                 hideDataPoints
-                adjustToWidth={true}
                 spacing={5}
                 color={decideColor(changePercentage, 'line')}
                 yAxisLabelWidth={48}
@@ -71,9 +71,9 @@ function PointerAreaChart({props}) {
                 pointerConfig={{
                     pointerStripHeight: 200,
                     activatePointersOnLongPress: true,
-                    autoAdjustPointerLabelPosition:true,
-                    showPointerStrip:true,
-                    stripOverPointer:true,
+                    autoAdjustPointerLabelPosition: true,
+                    showPointerStrip: true,
+                    stripOverPointer: true,
                     pointerStripColor: 'lightgray',
                     pointerStripWidth: 2,
                     pointerColor: 'lightgray',
@@ -85,17 +85,23 @@ function PointerAreaChart({props}) {
                             <View
                                 style={{
                                     height: 90,
-                                    width: 100,
+                                    width: 130,
                                     justifyContent: 'center',
                                     marginTop: -30,
-                                    marginLeft: -40,
+                                    marginLeft: -50,
                                 }}>
-                                <View style={{marginTop:20,paddingHorizontal:14,paddingVertical:6, borderRadius:16, backgroundColor:'white'}}>
-                                    <Text style={{fontWeight: 'bold',textAlign:'center'}}>
-                                        {'$' + price}
+                                <View style={{
+                                    marginTop: 20,
+                                    paddingHorizontal: 14,
+                                    paddingVertical: 6,
+                                    borderRadius: 16,
+                                    backgroundColor: 'white'
+                                }}>
+                                    <Text style={{fontWeight: 'bold', textAlign: 'center'}}>
+                                        {price + currencySymbol}
                                     </Text>
                                 </View>
-                                <Text style={{color: 'white', fontSize: 16,textAlign:'center'}}>
+                                <Text style={{color: 'white', fontSize: 16, textAlign: 'center'}}>
                                     {items[0].date}
                                 </Text>
 
@@ -105,7 +111,7 @@ function PointerAreaChart({props}) {
                     },
                 }}
             />
-            </View>
+        </View>
     );
 }
 

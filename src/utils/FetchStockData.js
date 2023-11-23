@@ -1,4 +1,4 @@
-import { CalculatePercentChange } from "../utils/CalculatePercentChange";
+import {CalculatePercentChange} from "./CalculatePercentChange";
 import convertDataToGraphData from "../utils/ConvertDataToLineChartData";
 
 export async function FetchStockData(ticker, interval) {
@@ -16,9 +16,9 @@ export async function FetchStockData(ticker, interval) {
         const logoResponse = await fetch(companyLogoUrl);
         const closePrices = dailyChangeResponse["chart"]["result"][0]["indicators"]["quote"][0]["close"];
         const lastPrice = closePrices[closePrices.length - 1].toFixed(2);
-        if(CalculatePercentChange(dailyChangeResponse) !== null){
+        if (CalculatePercentChange(dailyChangeResponse) !== null) {
             return {
-                logo: logoResponse._bodyBlob._data.size > 1 && logoResponse.status === 200?
+                logo: logoResponse._bodyBlob._data.size > 1 && logoResponse.status === 200 ?
                     companyLogoUrl : "https://www.mah-taab.com/wp-content/uploads/2018/06/No-Logo-Available.png",
                 ticker: ticker,
                 companyName: companyNameResponse && companyNameResponse["quotes"][0]["shortname"],
@@ -26,11 +26,11 @@ export async function FetchStockData(ticker, interval) {
                 graphData: convertDataToGraphData(dailyChangeResponse),
                 exchDisp: companyNameResponse["quotes"][0]["exchDisp"],
                 companyDescription: Object.keys(companyDescriptionResponse).length > 0 ?
-                    companyDescriptionResponse["Description"]:
+                    companyDescriptionResponse["Description"] :
                     "Description for this company is unavailable right now.",
                 lastPrice: lastPrice,
             };
-        }else{
+        } else {
             return null;
         }
     } catch (error) {
