@@ -12,8 +12,8 @@ An app that predicts whether a stock will end up or down
   
 ## Project Description
 StockPredictor is an application with two services:
-- The application offers daily tracking services for shares in the capital market in a convenient and interactive user interface.
-- The application offers stock forecasting services for value investors, where with the help of machine learning - the application predicts what the percentage change of any stock will be at the end of the calendar year.
+* The application offers daily tracking services for shares in the capital market in a convenient and interactive user interface.
+* The application offers stock forecasting services for value investors, where with the help of machine learning - the application predicts what the percentage change of any stock will be at the end of the calendar year.
 
 
 ![HomePage](https://github.com/TomerElal/StockPredictor/assets/126855038/b0307ea0-70bf-4a5c-920f-a150c04ae927)
