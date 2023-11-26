@@ -4,7 +4,7 @@ import {CardStyleInterpolators, createStackNavigator} from '@react-navigation/st
 
 // Import custom components and utilities
 import Home from "./src/screens/Home";
-import {View} from "react-native";
+import {Platform, View} from "react-native";
 import StockDetails from "./src/screens/StockDetails";
 import StockPredictionDescription from "./src/screens/StockPredictionDescription";
 
@@ -35,11 +35,14 @@ const App = () => {
                     name="StockDetailsScreen"
                     component={StockDetails}
                     options={{
-                        gestureEnabled: true, // Enable gestures
+                        gestureEnabled: Platform.OS === 'ios', // Enable gestures
                         gestureResponseDistance: 450,
                         gestureVelocityImpact: 2000,
                         gestureDirection: 'vertical',
-                        cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
+                        cardStyleInterpolator: Platform.OS === 'ios' ?
+                            CardStyleInterpolators.forFadeFromCenter
+                            :
+                            CardStyleInterpolators.forFadeFromBottomAndroid,
                         cardOverlay: () => (
                             <View style={{flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.7)'}}/>
                         ),
@@ -58,11 +61,14 @@ const App = () => {
                     name="PredictionDetailsScreen"
                     component={StockPredictionDescription}
                     options={{
-                        gestureEnabled: true, // Enable gestures
+                        gestureEnabled: Platform.OS === 'ios', // Enable gestures
                         gestureResponseDistance: 450,
                         gestureVelocityImpact: 2000,
                         gestureDirection: 'vertical',
-                        cardStyleInterpolator: CardStyleInterpolators.forFadeFromCenter,
+                        cardStyleInterpolator: Platform.OS === 'ios' ?
+                            CardStyleInterpolators.forFadeFromCenter
+                            :
+                            CardStyleInterpolators.forFadeFromBottomAndroid,
                         cardOverlay: () => (
                             <View style={{flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.7)'}}/>
                         ),

@@ -120,7 +120,7 @@ const NavigationBar = forwardRef(({
                         </Text>
                     </TouchableHighlight>
 
-                    <TouchableOpacity onPress={handleSearch} style={{paddingTop: 5, marginRight:5,}}>
+                    <TouchableOpacity onPress={handleSearch} style={{paddingTop: 15, marginRight:5, padding:10}}>
                         <Icon name="search" size={22} style={{color:'white'}}/>
                     </TouchableOpacity>
                 </>
@@ -142,7 +142,7 @@ const NavigationBar = forwardRef(({
             }
             {boolIsHomeScreen && !isEditMode ?
                 (<>
-                    <TouchableOpacity onPress={handleMenuPress} style={styles.menuIcon}>
+                    <TouchableOpacity onPress={handleMenuPress} style={[styles.menuIcon, {padding:10}]}>
                         <GridIcon width={25} height={25}/>
                     </TouchableOpacity>
                 </>)

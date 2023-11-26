@@ -141,12 +141,11 @@ const StockDetails = ({route, navigation}) => {
                     <Text style={{fontSize: 14, color: 'gray'}}>{currency}</Text>
                 </View>
             </View>
-            <View style={{flexGrow: 1, alignContent:'center', justifyContent:'center'}}>
-                <Text style={{color: 'white', padding:10,}}>
-                    {companyDescription}
-                </Text>
-            </View>
-            <ScrollView contentContainerStyle={{flexGrow: 1, alignContent:'center', justifyContent:'center'}}>
+            <ScrollView contentContainerStyle={{flexGrow: 1, alignContent:'center', justifyContent:'center', }}>
+                    <Text style={{color: 'white', paddingLeft:10,}}>
+                        {companyDescription}
+                    </Text>
+            </ScrollView>
                 <View style={{
                     height: 40,
                     alignItems: 'center',
@@ -197,7 +196,6 @@ const StockDetails = ({route, navigation}) => {
                         maxVal: currMaxVal, minVal: currMinVal, range: currRange, currencySymbol: currencySymbol
                     }}/>}
 
-            </ScrollView>
             <Button title="Close" onPress={() => navigation.goBack()} color={'#f8adb3'}/>
         </SafeAreaView>
     );
