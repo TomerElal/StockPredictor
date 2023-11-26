@@ -1,5 +1,5 @@
 # StockPredictor
-An app that predicts whether a stock will end up or down
+A mobile application that offers forecasting and tracking services for shares in the capital market.
 
 ## Table of Contents
 
