@@ -66,7 +66,7 @@ It should be noted that this feature will require the storage of a lot of data, 
 
 
 ## Credits
-Stock price data, fundamental analysis, technical data and financial reports were taken from the API'S of "Yahoo Finance" and "AlphaVantage".  
+Stock price data, fundamental analysis, technical data and financial reports were taken from the API'S of **"Yahoo Finance"** and ***"AlphaVantage"***.  
 
 ## Contact
 - Email: tomerelal1@gmail.com  
