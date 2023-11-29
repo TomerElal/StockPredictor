@@ -1,7 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, Text, View, StyleSheet, TouchableOpacity} from "react-native";
+import {ActivityIndicator, Text, View, StyleSheet, TouchableOpacity, Dimensions} from "react-native";
 import axios from "axios";
 import {useNavigation} from "@react-navigation/native";
+
+const dimensions = Dimensions.get('window');
 
 function ActivatePrediction({ticker, toggleModal, companyName}) {
     const [prediction, setPrediction] = useState(null);
@@ -56,7 +58,10 @@ function ActivatePrediction({ticker, toggleModal, companyName}) {
                     <Text style={[styles.PredictText, {color: prediction >= 0 ? "green" : "red"}]}>{prediction}%</Text>
                     <Text style={styles.PredictText}> within time period of a year</Text>
                     <TouchableOpacity onPress={showDescription} style={{alignItems: 'center', paddingTop: 10}}>
-                        <Text style={{color: '#eb5779', fontSize: 20}}>Press for Description</Text>
+                        <Text style={{
+                            color: '#eb5779',
+                            fontSize: (dimensions.width + dimensions.height) > 1200 ? 20 : 18
+                        }}>Press for Description</Text>
                     </TouchableOpacity>
                 </>
                 :
@@ -74,7 +79,8 @@ const styles = StyleSheet.create({
         paddingTop: 10,
     },
     LoadingText: {
-        fontSize: 18, color: '#f8adb3',
+        fontSize: (dimensions.width + dimensions.height) > 1200 ? 18 : 16,
+        color: '#f8adb3',
         textAlign: 'center',
         marginTop: 10,
         fontFamily: 'titleFont',
@@ -89,7 +95,7 @@ const styles = StyleSheet.create({
         color: '#f8adb3',
         textAlign: 'center',
         fontFamily: 'titleFont',
-        fontSize: 24,
+        fontSize: (dimensions.width + dimensions.height) > 1200 ? 24 : 22,
     }
 })
 export default ActivatePrediction;

@@ -1,11 +1,22 @@
 import React, {useState} from 'react';
-import {View, Text, Image, StyleSheet, TouchableOpacity, Modal, TouchableWithoutFeedback} from 'react-native';
+import {
+    View,
+    Text,
+    Image,
+    StyleSheet,
+    TouchableOpacity,
+    Modal,
+    TouchableWithoutFeedback,
+    Dimensions
+} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
 // Import a custom component
 import CurvedLineChart from "./CurvedLineChart";
 import ActivatePrediction from "../utils/ActivatePrediction";
 import Icon from "react-native-vector-icons/FontAwesome";
+
+const dimensions = Dimensions.get('window');
 
 /**
  * A component representing a stock container.
@@ -18,21 +29,21 @@ import Icon from "react-native-vector-icons/FontAwesome";
  * @param {Array} stockData.graphData - Data for the stock's price graph.
  * @returns {JSX.Element} - Rendered component.
  */
-const StockContainer = (({
-                             stockData,
-                             isEditMode,
-                             onDeleteStock,
-                             index,
-                             userStocks,
-                             drag,
-                             isActive,
-                             showLoadDefaultButton,
-                             isPriceDisplay,
-                             currency,
-                             currencySymbol,
-                             exchangeRate,
-                             onUserClickedStock,
-                         }) => {
+const StockContainer = React.memo(({
+                                       stockData,
+                                       isEditMode,
+                                       onDeleteStock,
+                                       index,
+                                       userStocks,
+                                       drag,
+                                       isActive,
+                                       showLoadDefaultButton,
+                                       isPriceDisplay,
+                                       currency,
+                                       currencySymbol,
+                                       exchangeRate,
+                                       onUserClickedStock,
+                                   }) => {
     const {logo, ticker, companyName, percentageChange, graphData, exchDisp, companyDescription, lastPrice} = stockData;
     const navigation = useNavigation();
     const [isModalVisible, setModalVisible] = useState(false);
@@ -75,7 +86,10 @@ const StockContainer = (({
                 <View style={styles.details}>
                     <Text style={styles.stockName}>{ticker}</Text>
                     <Text style={styles.companyName}>{companyName}</Text>
-                    <Text style={{fontSize: 14, color: percentageChange >= 0 ? '#39FF13' : '#eb5779'}}>
+                    <Text style={{
+                        fontSize: (dimensions.width + dimensions.height) > 1200 ? 14 : 12,
+                        color: percentageChange >= 0 ? '#39FF13' : '#eb5779'
+                    }}>
                         {isPriceDisplay ? (lastPrice * exchangeRate).toFixed(2) + currencySymbol : percentageChange + '%'}
                     </Text>
                 </View>
@@ -83,22 +97,18 @@ const StockContainer = (({
 
             {isEditMode ?
                 (<TouchableOpacity onPress={() => onDeleteStock(ticker)} style={{marginRight: 20,}}>
-                    <Icon name="minus-circle" size={30} color="#eb5779"/>
+                    <Icon name="minus-circle" size={(dimensions.width + dimensions.height) > 1200 ? 30 : 27}
+                          color="#eb5779"/>
                 </TouchableOpacity>)
                 :
-                (<>
-                    <TouchableOpacity onPress={openStockDetails}>
-                        <View style={styles.middleAndRightContainer}>
-                            <CurvedLineChart data={graphData} changePercentage={percentageChange}/>
-                        </View>
+                (<View style={{flex: 0.8, flexDirection: 'row', alignItems: 'center',}}>
+                    <TouchableOpacity onPress={openStockDetails} style={{flex: 1, paddingRight: 10, paddingLeft: 10}}>
+                        <CurvedLineChart data={graphData} changePercentage={percentageChange}/>
                     </TouchableOpacity>
-
-                    <View style={styles.middleAndRightContainer}>
-                        <TouchableOpacity onPress={toggleModal}>
-                            <Text style={styles.buttonText}>Predict</Text>
-                        </TouchableOpacity>
-                    </View>
-                </>)}
+                    <TouchableOpacity onPress={toggleModal} style={{flex: 1, padding: 10}}>
+                        <Text style={styles.buttonText}>Predict</Text>
+                    </TouchableOpacity>
+                </View>)}
 
             <Modal animationType="fade"
                    transparent={true}
@@ -123,6 +133,7 @@ const styles = StyleSheet.create({
     StockContainer: {
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'space-between',
         padding: 10,
         borderColor: '#ccc',
         marginBottom: 15,
@@ -132,39 +143,47 @@ const styles = StyleSheet.create({
         borderBottomLeftRadius: 10,
     },
     leftContainer: {
+        flex: 0.7,
         flexDirection: 'row',
-        flex: 2,
         alignItems: 'center',
-        justifyContent: 'center',
-        height: 50,
+        height: (dimensions.width + dimensions.height) > 1200 ? 60 : 50,
     },
     logo: {
-        width: 50,
-        height: 50,
+        width: (dimensions.width + dimensions.height) > 1200 ? 50 : 40,
+        height: (dimensions.width + dimensions.height) > 1200 ? 50 : 40,
         marginRight: 10,
         resizeMode: 'contain',
     },
     details: {
         flex: 1,
-        marginLeft: 5,
+        paddingLeft: 5,
     },
     stockName: {
-        fontSize: 16,
+        fontSize: (dimensions.width + dimensions.height) > 1200 ? 16 : 14,
         fontWeight: 'bold',
         color: 'white',
+        shadowRadius: 5,
+        shadowOpacity: 1,
+        shadowColor: "#eb5779",
+        fontStyle: "italic",
+        shadowOffset: {
+            width: 5,
+            height: 0.5,
+        },
+        elevation: 50,
     },
     companyName: {
-        fontSize: 14,
+        fontSize: (dimensions.width + dimensions.height) > 1200 ? 14 : 12,
         color: '#8a8c90',
+        maxHeight: (dimensions.width + dimensions.height) > 1200 ? 35 : 25,
     },
     middleAndRightContainer: {
-        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
     },
     buttonText: {
         color: '#f8adb3',
-        fontSize: 20,
+        fontSize: (dimensions.width + dimensions.height) > 1200 ? 20 : 18,
         fontFamily: 'titleFont',
         textAlign: 'center',
     },
@@ -175,31 +194,25 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalContent: {
-        width: 300, // Customize the width of the panel
-        backgroundColor: '#21262f', // Customize the background color
-        borderRadius: 10, // Add rounded corners for decoration
+        width: (dimensions.width + dimensions.height) > 1200 ? 300 : 250,
+        backgroundColor: '#21262f',
+        borderRadius: 10,
         padding: 20,
     },
-    closeButton: {
-        color: 'black', // Customize close button text color
-        fontSize: 16,
-        textAlign: 'center',
-    },
     moveStockSign: {
-        marginRight: 50,
         marginLeft: 10,
-        width: 30, // Adjust the size of the icon as needed
-        height: 20,
-        justifyContent: 'space-between',
+        width: (dimensions.width + dimensions.height) > 1200 ? 50 : 40,
+        height: (dimensions.width + dimensions.height) > 1200 ? 50 : 40,
         alignItems: 'center',
+        justifyContent: 'center',
+        paddingLeft: 10,
+        paddingRight: 10,
     },
     line: {
-        width: '100%',
-        height: 4, // Adjust the height of the lines as needed
+        width: 40,
+        marginTop: 5,
+        height: (dimensions.width + dimensions.height) > 1200 ? 4 : 3.5,
         backgroundColor: 'black', // Line color
-    },
-    deleteIcon: {
-        color: 'white',
     },
 });
 

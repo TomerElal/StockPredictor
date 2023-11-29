@@ -11,7 +11,8 @@ import {ActivityIndicator, StyleSheet, Text, View} from 'react-native';
 export default function FontLoader({children}) {
     const [fontLoaded] = useFonts({
         'titleFont': require('../../assets/fonts/JosefinSans-SemiBold.ttf'),
-        'descriptionFont': require('../../assets/fonts/Lora-Regular.ttf'),
+        'descriptionFont': require('../../assets/fonts/RobotoSlab-Regular.ttf'),
+        'menuFont': require('../../assets/fonts/Raleway-Regular.ttf'),
     });
 
     if (!fontLoaded) {

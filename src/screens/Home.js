@@ -1,11 +1,11 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
     LayoutAnimation, Modal, Platform,
-    RefreshControl,
     SafeAreaView,
     StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback,
     View
 } from "react-native";
+import {RefreshControl} from "react-native-gesture-handler"
 import FontLoader from "../utils/FontLoader";
 import {FetchStockData} from "../utils/FetchStockData";
 import Loading from "./Loading";
@@ -20,10 +20,11 @@ import DraggableFlatList from 'react-native-draggable-flatlist';
 import SearchStocks from "../utils/SearchStocks";
 import * as Haptics from 'expo-haptics';
 
-function decideMargin(isEditMode){
-    const margin = isEditMode? 50:0;
-    return Platform.OS === 'ios'? margin:margin+25
+function decideMargin(isEditMode) {
+    const margin = isEditMode ? 50 : 0;
+    return Platform.OS === 'ios' ? margin : margin + 25
 }
+
 function LoadDefaultStocks(props) {
     return <View style={{flex: 1, justifyContent: 'center'}}>
         <TouchableOpacity onPress={props.onPress} style={{
@@ -149,18 +150,12 @@ function Home() {
     };
 
     function handleHomeReturnPress() {
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
-        setUserSearchedStock(false);
-    }
-
-
-    const callNavigationBarChildFunction = (order) => {
-        if (order === "closeMenu") {
-            NavigationBarRef.current.closeMenu();
-        } else if (order === "closeKeyboard") {
-            NavigationBarRef.current.closeKeyboard();
+        if (Platform.OS === 'ios') {
+            LayoutAnimation.configureNext(LayoutAnimation.Presets.linear);
         }
-    };
+        setUserSearchedStock(false);
+        setIsEditMode(false);
+    }
 
     useEffect(() => {
         const handleAddToWatchlist = async (symbol) => {
@@ -304,7 +299,7 @@ function Home() {
                                onChangeCurrency={handleChangeCurrency}
                                isPriceDisplay={isPriceDisplay}
                                ref={NavigationBarRef}/>
-                <View style={styles.container} onTouchStart={() => callNavigationBarChildFunction("closeMenu")}>
+                <View style={styles.container} onTouchStart={() => NavigationBarRef.current.closeMenu()}>
                     {(isEditMode) ?
                         (<>
                             <TouchableOpacity onPress={() => setUserAddingStocks(true)}
@@ -341,7 +336,7 @@ function Home() {
                     {stocksData.length > 0 && !userSearchedStock ?
                         <>{isDraggable ?
                             <DraggableFlatList
-                                onScrollBeginDrag={() => callNavigationBarChildFunction("closeKeyboard")}
+                                keyboardDismissMode={"on-drag"}
                                 ref={flatListRef}
                                 data={stocksData}
                                 onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}

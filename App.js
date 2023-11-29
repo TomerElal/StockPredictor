@@ -9,7 +9,9 @@ import StockDetails from "./src/screens/StockDetails";
 import StockPredictionDescription from "./src/screens/StockPredictionDescription";
 
 const Stack = createStackNavigator();
+import { I18nManager } from 'react-native';
 
+I18nManager.forceRTL(false);
 const transitionConfig = {
     animation: 'timing',
     config: {
@@ -35,7 +37,7 @@ const App = () => {
                     name="StockDetailsScreen"
                     component={StockDetails}
                     options={{
-                        gestureEnabled: Platform.OS === 'ios', // Enable gestures
+                        gestureEnabled: Platform.OS === 'ios',
                         gestureResponseDistance: 450,
                         gestureVelocityImpact: 2000,
                         gestureDirection: 'vertical',
@@ -61,7 +63,7 @@ const App = () => {
                     name="PredictionDetailsScreen"
                     component={StockPredictionDescription}
                     options={{
-                        gestureEnabled: Platform.OS === 'ios', // Enable gestures
+                        gestureEnabled: Platform.OS === 'ios',
                         gestureResponseDistance: 450,
                         gestureVelocityImpact: 2000,
                         gestureDirection: 'vertical',

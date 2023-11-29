@@ -5,12 +5,14 @@ import {
     TouchableOpacity,
     TouchableHighlight,
     TextInput,
-    LayoutAnimation, Keyboard, SafeAreaView
+    LayoutAnimation, Keyboard, SafeAreaView, Dimensions, Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import GridIcon from '../../assets/icons/GridIcon';
 import Menu from "./Menu";
 
+const windowWidth = Dimensions.get('window').width;
+const dimensions = Dimensions.get('window');
 const NavigationBar = forwardRef(({
                                       onSearchSubmit, onHomeReturn, flatListRef, boolIsHomeScreen, onEditWatchlist,
                                       isEditMode, onPriceOrChangeDisplay, onChangeCurrency, isPriceDisplay
@@ -19,7 +21,6 @@ const NavigationBar = forwardRef(({
     const [searchPressed, setSearchPressed] = useState(false);
     const [searchText, setSearchText] = useState('');
     const [menuVisible, setMenuVisible] = useState(false);
-
     const handleMenuPress = () => {
         setSearchPressed(false);
         setMenuVisible(!menuVisible);
@@ -65,13 +66,9 @@ const NavigationBar = forwardRef(({
         setMenuVisible(false);
     }
 
-    function closeKeyboard() {
-        Keyboard.dismiss();
-    }
 
     useImperativeHandle(ref, () => ({
         closeMenu: closeMenu,
-        closeKeyboard: closeKeyboard,
     }));
 
     const handleEditWatchlist = () => {
@@ -102,7 +99,8 @@ const NavigationBar = forwardRef(({
                         autoCapitalize="none"
                         returnKeyType="search"
                     />
-                    <TouchableOpacity onPress={handleSearch} style={{padding: 10, paddingLeft: 20, marginTop: 5}}>
+                    <TouchableOpacity onPress={handleSearch}
+                                      style={{padding: 10, paddingLeft: 20, marginTop: Platform.OS === 'ios' ? 5 : 12}}>
                         <Text style={{color: "#f8adb3"}}>Cancel</Text>
                     </TouchableOpacity>
                 </>
@@ -120,8 +118,10 @@ const NavigationBar = forwardRef(({
                         </Text>
                     </TouchableHighlight>
 
-                    <TouchableOpacity onPress={handleSearch} style={{paddingTop: 15, marginRight:5, padding:10}}>
-                        <Icon name="search" size={22} style={{color:'white'}}/>
+                    <TouchableOpacity onPress={handleSearch}
+                                      style={{paddingTop: Platform.OS === 'ios' ? 15 : 22, padding: 10}}>
+                        <Icon name="search" size={(dimensions.width + dimensions.height) > 1200 ? 22 : 20}
+                              style={{color: 'white'}}/>
                     </TouchableOpacity>
                 </>
             )}
@@ -131,7 +131,7 @@ const NavigationBar = forwardRef(({
                         <Text style={{
                             fontFamily: "titleFont",
                             color: "#f8adb3",
-                            fontSize: 20,
+                            fontSize: (dimensions.width + dimensions.height) > 1200 ? 20 : 18,
                         }}>Done</Text>
                     </TouchableOpacity>
                 </>)
@@ -142,8 +142,9 @@ const NavigationBar = forwardRef(({
             }
             {boolIsHomeScreen && !isEditMode ?
                 (<>
-                    <TouchableOpacity onPress={handleMenuPress} style={[styles.menuIcon, {padding:10}]}>
-                        <GridIcon width={25} height={25}/>
+                    <TouchableOpacity onPress={handleMenuPress} style={styles.menuIcon}>
+                        <GridIcon width={(dimensions.width + dimensions.height) > 1200 ? 25 : 23}
+                                  height={(dimensions.width + dimensions.height) > 1200 ? 25 : 23}/>
                     </TouchableOpacity>
                 </>)
                 :
@@ -174,29 +175,36 @@ const styles = {
         zIndex: 999,
     },
     appName: {
-        fontSize: 30,
+        fontSize: (dimensions.width + dimensions.height) > 1200 ? 30 : 26,
         color: 'white',
         fontFamily: 'titleFont',
         marginTop: 5,
-        marginRight: 50,
+        marginRight: windowWidth < 400 ? (windowWidth < 370 ? 25 : 35) : (windowWidth > 420 ? 60 : 50),
+        shadowOpacity: 1,
+        shadowColor: "#eb5779",
+        elevation: 50,
+        shadowOffset: {
+            width: 3,
+            height: -3,
+        },
     },
     searchBar: {
         backgroundColor: 'white',
         borderRadius: 5,
         flex: 1,
-        height: 35,
+        height: (dimensions.width + dimensions.height) > 1200 ? 35 : 28,
         paddingHorizontal: 15,
-        marginTop: 5,
+        marginTop: Platform.OS === 'ios' ? 5 : 12,
     },
     menuIcon: {
-        marginTop: 7,
-
+        marginTop: Platform.OS === 'ios' ? 7 : 14,
+        padding: 10,
     },
     menu: {
         position: 'absolute',
         top: 70,
         right: 10,
-        width: 250,
+        width: (dimensions.width + dimensions.height) > 1200 ? 250 : 200,
         backgroundColor: '#21262f',
         borderWidth: 2,
         borderRadius: 20,

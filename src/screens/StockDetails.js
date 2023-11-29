@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {
     ActivityIndicator,
-    Button,
+    Button, Dimensions,
     FlatList, Platform,
     SafeAreaView, ScrollView,
     StyleSheet,
@@ -14,6 +14,7 @@ import EventEmitter from 'react-native-eventemitter';
 import Icon from "react-native-vector-icons/FontAwesome5";
 import convertDataToGraphData from "../utils/ConvertDataToLineChartData";
 
+const dimensions = Dimensions.get('window');
 const StockDetails = ({route, navigation}) => {
     const {
         ticker,
@@ -41,7 +42,13 @@ const StockDetails = ({route, navigation}) => {
     const [currRange, setCurrRange] = useState('1d');
     const [currPercentageChange, setCurrPercentageChange] = useState(percentageChange);
     const [loading, setLoading] = useState(false);
+    const [descriptionLayoutSize, setDescriptionLayoutSize] = useState(0);
+    const [scrollLayoutSize, setScrollLayoutSize] = useState(0);
+    const [isScrollable, setIsScrollable] = useState(true);
 
+    useEffect(() => {
+        setIsScrollable(descriptionLayoutSize > scrollLayoutSize);
+    }, [descriptionLayoutSize, scrollLayoutSize]);
     const handleAddToWatchlist = () => {
         EventEmitter.emit('addToWatchlistEvent', [ticker]);
         setIsTickerInWatchlist(!isTickerInWatchlist);
@@ -99,8 +106,11 @@ const StockDetails = ({route, navigation}) => {
                 )
             ),
             headerLeft: () => (
-                <TouchableOpacity onPress={handleHomeReturn} style={{flex:1, alignItems:'center', flexDirection: 'row'}}>
-                    <Icon name={'chevron-left'} color={'#f8adb3'} size={24} style={{paddingLeft: 10, paddingRight: 7, paddingBottom: Platform.OS === 'ios'? 5:0,}}
+                <TouchableOpacity onPress={handleHomeReturn}
+                                  style={{flex: 1, alignItems: 'center', flexDirection: 'row'}}>
+                    <Icon name={'chevron-left'} color={'#f8adb3'}
+                          size={(dimensions.width + dimensions.height) > 1200 ? 24 : 22}
+                          style={{paddingLeft: 10, paddingRight: 7, paddingBottom: Platform.OS === 'ios' ? 5 : 0,}}
                           allowFontScaling={true}/>
                     <Text style={styles.headerButtons}>Home</Text>
                 </TouchableOpacity>
@@ -136,65 +146,77 @@ const StockDetails = ({route, navigation}) => {
                         keyExtractor={(item) => item.key}
                     />
                 </View>
-                <View style={{padding: 10, paddingBottom:0, flexDirection: "row"}}>
-                    <Text style={{fontSize: 14, color: 'gray'}}>{exchDisp} ◦ </Text>
-                    <Text style={{fontSize: 14, color: 'gray'}}>{currency}</Text>
+                <View style={{padding: 10, paddingBottom: 0, flexDirection: "row"}}>
+                    <Text style={styles.currencyAndExchangeDisp}>{exchDisp} ◦ </Text>
+                    <Text style={styles.currencyAndExchangeDisp}>{currency}</Text>
                 </View>
             </View>
-            <ScrollView contentContainerStyle={{flexGrow: 1, alignContent:'center', justifyContent:'center', }}>
-                    <Text style={{color: 'white', paddingLeft:10,}}>
+            <ScrollView scrollEnabled={isScrollable}
+                        onLayout={(event) => setScrollLayoutSize(event.nativeEvent.layout.height)}
+                        contentContainerStyle={{flexGrow: 1, alignContent: 'center', justifyContent: 'center',}}>
+                <View onLayout={(event) => setDescriptionLayoutSize(event.nativeEvent.layout.height)}>
+                    <Text style={{color: 'white', paddingLeft: 10,}}>
                         {companyDescription}
                     </Text>
-            </ScrollView>
-                <View style={{
-                    height: 40,
-                    alignItems: 'center',
-                    marginTop: 10,
-                    marginBottom: 10,
-                    alignSelf: 'center'
-                }}>
-                    <FlatList
-                        data={[{range: '1d', interval: '5m'}, {range: '5d', interval: '30m'}, {
-                            range: '1mo',
-                            interval: '90m'
-                        }, {range: '6mo', interval: '1d'}, {range: 'ytd', interval: '1d'}, {
-                            range: '1y',
-                            interval: '1wk'
-                        }, {range: '2y', interval: '1wk'}, {range: '5y', interval: '1mo'}, {range: 'max', interval: '3mo'}]}
-                        horizontal={true}
-                        style={{width: 385, }}
-                        keyExtractor={(item) => item.range}
-                        renderItem={({item}) => {
-                            return (
-                                <TouchableOpacity onPress={() => changeGraphRange(item.range, item.interval)} style={{
-                                    borderRightWidth: 1,
-                                    borderTopRightRadius: 10,
-                                    borderRightColor: 'white',
-                                    justifyContent:'center',
-                                    paddingTop:5,
-                                }}>
-                                    <Text style={{
-                                        color: currRange === item.range ? '#eb5779' : '#f8adb3',
-                                        fontFamily: 'titleFont',
-                                        fontSize: 22,
-                                        paddingRight:10,
-                                        paddingLeft:10,
-                                    }}>{item.range}</Text>
-                                </TouchableOpacity>
-                            )
-                        }
-                        }
-                    />
                 </View>
-                {loading ?
-                    <View style={{paddingTop:50, paddingBottom:80,alignItems: 'center', justifyContent: 'center',}}>
-                        <ActivityIndicator size="large" color="#f8adb3"/>
-                        <Text style={{color: 'white', fontFamily: 'titleFont', fontSize: 24, padding: 30}}>Loading...</Text>
-                    </View>
-                    : <PointerAreaChart props={{
-                        dailyData: currGraphData, changePercentage: currPercentageChange,
-                        maxVal: currMaxVal, minVal: currMinVal, range: currRange, currencySymbol: currencySymbol
-                    }}/>}
+            </ScrollView>
+            <View style={{
+                height: 40,
+                alignItems: 'center',
+                marginTop: 10,
+                marginBottom: 10,
+                alignSelf: 'center'
+            }}>
+                <FlatList
+                    data={[{range: '1d', interval: '5m'}, {range: '5d', interval: '30m'}, {
+                        range: '1mo',
+                        interval: '90m'
+                    }, {range: '6mo', interval: '1d'}, {range: 'ytd', interval: '1d'}, {
+                        range: '1y',
+                        interval: '1wk'
+                    }, {range: '2y', interval: '1wk'}, {range: '5y', interval: '1mo'}, {range: 'max', interval: '3mo'}]}
+                    horizontal={true}
+                    style={{width: dimensions.width,}}
+                    keyExtractor={(item) => item.range}
+                    renderItem={({item}) => {
+                        return (
+                            <TouchableOpacity onPress={() => changeGraphRange(item.range, item.interval)} style={{
+                                borderRightWidth: 1,
+                                borderTopRightRadius: 10,
+                                borderRightColor: 'white',
+                                justifyContent: 'center',
+                                paddingTop: dimensions.height > 800 ? 5 : 0,
+                            }}>
+                                <Text style={{
+                                    color: currRange === item.range ? '#eb5779' : '#f8adb3',
+                                    shadowRadius: 5,
+                                    shadowOpacity: currRange === item.range ? 0.8 : 0,
+                                    shadowColor: "#eb5779",
+                                    shadowOffset: {
+                                        width: 0,
+                                        height: 0,
+                                    },
+                                    elevation: currRange === item.range ? 5 : 0,
+                                    fontFamily: 'titleFont',
+                                    fontSize: (dimensions.width + dimensions.height) > 1200 ? 22 : 20,
+                                    paddingRight: 10,
+                                    paddingLeft: 10,
+                                }}>{item.range}</Text>
+                            </TouchableOpacity>
+                        )
+                    }
+                    }
+                />
+            </View>
+            {loading ?
+                <View style={{paddingTop: 50, paddingBottom: 80, alignItems: 'center', justifyContent: 'center',}}>
+                    <ActivityIndicator size="large" color="#f8adb3"/>
+                    <Text style={{color: 'white', fontFamily: 'titleFont', fontSize: 24, padding: 30}}>Loading...</Text>
+                </View>
+                : <PointerAreaChart props={{
+                    dailyData: currGraphData, changePercentage: currPercentageChange,
+                    maxVal: currMaxVal, minVal: currMinVal, range: currRange, currencySymbol: currencySymbol
+                }}/>}
 
             <Button title="Close" onPress={() => navigation.goBack()} color={'#f8adb3'}/>
         </SafeAreaView>
@@ -205,7 +227,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#21262f',
-        justifyContent:'center',
+        justifyContent: 'center',
     },
     header: {
         flexDirection: 'row',
@@ -216,17 +238,17 @@ const styles = StyleSheet.create({
     },
     stockName: {
         color: 'white',
-        fontSize: 28,
+        fontSize: (dimensions.width + dimensions.height) > 1200 ? 28 : 26,
         paddingBottom: 5
     },
     companyName: {
         color: 'gray',
-        fontSize: 16,
+        fontSize: (dimensions.width + dimensions.height) > 1200 ? 16 : 14,
         padding: 8,
         marginTop: 4,
     },
     mainPrices: {
-        paddingTop: 12,
+        paddingTop: dimensions.height > 800 ? 12 : 8,
         borderBottomWidth: 0.5,
         borderBottomColor: 'gray',
         flexDirection: 'row',
@@ -240,17 +262,21 @@ const styles = StyleSheet.create({
     },
     price: {
         color: 'white',
-        fontSize: 18,
+        fontSize: (dimensions.width + dimensions.height) > 1200 ? 18 : 16,
     },
     PriceText: {
         color: 'gray',
-        fontSize: 14,
+        fontSize: (dimensions.width + dimensions.height) > 1200 ? 14 : 12,
         padding: 6,
     },
     headerButtons: {
         color: '#f8adb3',
-        fontSize: 20,
+        fontSize: (dimensions.width + dimensions.height) > 1200 ? 20 : 18,
         fontFamily: 'titleFont',
+    },
+    currencyAndExchangeDisp: {
+        color: 'gray',
+        fontSize: (dimensions.width + dimensions.height) > 1200 ? 14 : 12,
     },
 });
 

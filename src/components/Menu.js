@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import {
-    ActivityIndicator,
+    ActivityIndicator, Dimensions,
     FlatList,
-    Modal,
+    Modal, Platform,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -10,6 +10,8 @@ import {
     View
 } from "react-native";
 import {rgbaColor} from "react-native-reanimated/src";
+
+const dimensions = Dimensions.get('window');
 
 function Menu({onEditWatchlist, onPriceOrChangeDisplay, onChangeCurrency, isPriceDisplay, closeMenu}) {
     const [isModalVisible, setModalVisible] = useState(false);
@@ -68,7 +70,9 @@ function Menu({onEditWatchlist, onPriceOrChangeDisplay, onChangeCurrency, isPric
                     <View style={styles.modalContainer}>
                         <TouchableWithoutFeedback>
                             {loading ? <View style={styles.LoadingContainer}>
-                                <ActivityIndicator size="large" color="#f8adb3"/>
+                                <ActivityIndicator
+                                    size={(dimensions.width + dimensions.height) > 1200 ? "large" : "small"}
+                                    color="#f8adb3"/>
                                 <Text style={styles.LoadingText}>
                                     Calculating New Prices...
                                 </Text>
@@ -84,18 +88,20 @@ function Menu({onEditWatchlist, onPriceOrChangeDisplay, onChangeCurrency, isPric
                                                 marginBottom: 5,
                                                 width: 320,
                                                 justifyContent: 'center',
+                                                alignItems: 'center',
                                                 padding: 5,
+                                                paddingRight: (dimensions.width + dimensions.height) > 1200 ? 0 : 40,
                                                 flexDirection: 'row',
                                             }}
                                                               onPress={() => handleCurrencyChange(item.currency, item.symbol)}>
                                                 <Text style={{
                                                     color: '#f8adb3',
                                                     textAlign: 'center',
-                                                    fontSize: 20
+                                                    fontSize: (dimensions.width + dimensions.height) > 1200 ? 20 : 18
                                                 }}>{item.currency}</Text>
                                                 <Text style={{
                                                     color: '#f8adb3',
-                                                    fontSize: 13,
+                                                    fontSize: (dimensions.width + dimensions.height) > 1200 ? 13 : 11,
                                                     textAlign: 'center',
                                                     paddingTop: 4,
                                                 }}> ({item.state})</Text>
@@ -114,7 +120,7 @@ function Menu({onEditWatchlist, onPriceOrChangeDisplay, onChangeCurrency, isPric
 
 const styles = StyleSheet.create({
     menuItem: {
-        height: 40,
+        height: (dimensions.width + dimensions.height) > 1200 ? 40 : 35,
         borderBottomColor: '#f8adb3',
         borderBottomWidth: 1,
         alignItems: 'center',
@@ -122,7 +128,8 @@ const styles = StyleSheet.create({
     },
     menuItemText: {
         color: 'white',
-        fontSize: 16,
+        fontSize: (dimensions.width + dimensions.height) > 1200 ? 16 : 14,
+        fontFamily: 'menuFont',
     },
     modalContainer: {
         flex: 1,
@@ -131,19 +138,17 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalContent: {
-        width: 320, // Customize the width of the panel
+        width: (dimensions.width + dimensions.height) > 1200 ? 320 : 280, // Customize the width of the panel
         backgroundColor: '#21262f', // Customize the background color
         borderRadius: 10, // Add rounded corners for decoration
-        height: 285,
-        justifyContent: 'center',
-        alignItems: 'center',
+        height: (dimensions.width + dimensions.height) > 1200 ? 285 : 265,
         paddingTop: 20,
         paddingBottom: 20,
         borderColor: 'white',
     },
     modalText: {
         color: 'white', // Customize text color
-        fontSize: 24,
+        fontSize: (dimensions.width + dimensions.height) > 1200 ? 24 : 22,
         padding: 5,
         marginBottom: 10,
         textAlign: 'center',
@@ -154,13 +159,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingTop: 10,
-        width: 300,
-        height: 180,
+        width: (dimensions.width + dimensions.height) > 1200 ? 300 : 250,
+        height: (dimensions.width + dimensions.height) > 1200 ? 180 : 160,
         borderRadius: 10,
         borderColor: 'white',
     },
     LoadingText: {
-        fontSize: 18, color: '#f8adb3',
+        fontSize: (dimensions.width + dimensions.height) > 1200 ? 18 : 16,
+        color: '#f8adb3',
         textAlign: 'center',
         marginTop: 10,
         fontFamily: 'titleFont',

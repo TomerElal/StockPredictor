@@ -1,5 +1,5 @@
 import React from 'react';
-import {View} from "react-native";
+import {Dimensions, Platform, View} from "react-native";
 import {LineChart} from "react-native-gifted-charts"
 import {Text} from 'react-native';
 import ConvertDataToAreaChartData from "../utils/ConvertDataToAreaChartData";
@@ -29,10 +29,11 @@ function decideColor(changePercentage, obj) {
 
 function PointerAreaChart({props}) {
     const {dailyData, changePercentage, maxVal, minVal, range, currencySymbol} = props;
+    const dimensions = Dimensions.get('window');
     return (
         <View
             style={{
-                paddingBottom: 55,
+                paddingBottom: 50,
                 paddingLeft: 5,
             }}>
             <LineChart
@@ -42,7 +43,8 @@ function PointerAreaChart({props}) {
                 onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
                 showScrollIndicator
                 rotateLabel
-                width={355}
+                width={dimensions.width - 50}
+                height={dimensions.height / 4.5}
                 yAxisOffset={Number(minVal)}
                 showFractionalValues={true}
                 roundToDigits={2}
@@ -87,8 +89,8 @@ function PointerAreaChart({props}) {
                                     height: 90,
                                     width: 130,
                                     justifyContent: 'center',
-                                    marginTop: -30,
                                     marginLeft: -50,
+                                    marginTop: Platform.OS === 'ios' ? 0 : 40,
                                 }}>
                                 <View style={{
                                     marginTop: 20,
@@ -104,8 +106,6 @@ function PointerAreaChart({props}) {
                                 <Text style={{color: 'white', fontSize: 16, textAlign: 'center'}}>
                                     {items[0].date}
                                 </Text>
-
-
                             </View>
                         );
                     },
