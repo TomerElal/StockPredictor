@@ -5,7 +5,7 @@ A mobile application that offers forecasting and tracking services for shares in
 
 - [Project Description](#Project-Description)
 - [Features](#Features)
-- [Technologies & Libraries](#Technologies-and-Libraries)
+- [Technologies and Libraries](#Technologies-and-Libraries)
 - [Installation](#installation)
 - [Extensions](#Extensions)
 - [Credits](#credits)
