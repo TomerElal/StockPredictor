@@ -393,7 +393,7 @@ function Home() {
                                         );
                                     }}
                                     onDragEnd={({data}) => handleStockOrderChange(data)}
-                                    refreshControl={
+                                    refreshControl={isEditMode? <></>:
                                         <RefreshControl refreshing={refreshing} onRefresh={handleRefresh}
                                                         tintColor="#f8adb3"/>
                                     }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import StockContainer from '../components/StockContainer';
-import { FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {Dimensions, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import { FetchStockData } from '../utils/FetchStockData';
 
 /**
@@ -22,6 +22,7 @@ function SearchedStock(props) {
     const [refreshing, setRefreshing] = useState(false);
     const [stocksData, setStocksData] = useState(props.searchedStockData);
     const matchedStocks = props.searchedStockData.map((stock) => stock.ticker);
+    const height = Dimensions.get('window').height;
 
     /**
      * Handles the refresh action to fetch the latest stock data.
@@ -39,6 +40,7 @@ function SearchedStock(props) {
         <View>
             {matchedStocks.length > 0 ? (
                 <FlatList
+                    style={{maxHeight:height > 800 ? height - 100 : height - 150}}
                     data={stocksData}
                     keyExtractor={(item) => item.ticker}
                     renderItem={({ item, index }) => (
@@ -75,7 +77,8 @@ function SearchedStock(props) {
 
 const styles = StyleSheet.create({
     HomeButton: {
-        marginTop: 15,
+
+        paddingTop: 15,
         alignItems: 'center',
     },
     Text: {
