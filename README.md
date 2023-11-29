@@ -30,17 +30,17 @@ StockPredictor is an application with two services:
 - Detailed description of each stock's company.
 
 ## Technologies & Libraries
-- *Expo tech* for mobile developers: The application was developed with the help of the React-Native library, which provides a convenient and efficient environment for developing mobile applications for 
+- **Expo tech** for mobile developers: The application was developed with the help of the React-Native library, which provides a convenient and efficient environment for developing mobile applications for 
   Android and IOS operating systems. With the help of Expo's application development technology, it was possible to see visual changes in the application in real time, thus enabling a better development 
   experience.
-- *Restful API* using *Flask* library: The part of the backend where the percentage change of a stock is predicted using machine learning, is coded using a Python script that mobile operating systems do 
-  not know how to run. Therefore, a RESTAPI request in the POST method is needed where the script receives an input with the name of a stock for which you want to make a prediction.
-- *Amazon Web Services (AWS)*: The Python script for running the ML prediction is saved under Amazon Web Services in the EC2 instance. When the user requests a prediction, an HTTP request is sent to the 
+- **Restful API** using **Flask**library: The part of the backend where the percentage change of a stock is predicted using machine learning, is coded using a Python script that mobile operating systems 
+  do not know how to run. Therefore, a RESTAPI request in the POST method is needed where the script receives an input with the name of a stock for which you want to make a prediction.
+- **Amazon Web Services (AWS)**: The Python script for running the ML prediction is saved under Amazon Web Services in the EC2 instance. When the user requests a prediction, an HTTP request is sent to the 
   public address of the instance - where with the help of the Flask library and other libraries, a prediction of the percentage of change is made and an appropriate output is returned..
-- *Sklearn* library: The machine learning model was built using the sklearn library with the Random Forest algorithm in regression.
-- *Gunicorn* Web Server Gateway Interface: In order for the Python script to be accessible at any given time, a server is needed that will run it without interruption and will be able to receive requests 
-  spontaneously and simultaneously from several users.
-- Joblib library: In order not to recalculate the machine model for training every run, I saved the trained model in a binary file with the help of the Joblib library, which allows saving objects to 
+- **Sklearn** library: The machine learning model was built using the sklearn library with the Random Forest algorithm in regression.
+- **Gunicorn** Web Server Gateway Interface: In order for the Python script to be accessible at any given time, a server is needed that will run it without interruption and will be able to receive 
+  requests spontaneously and simultaneously from several users.
+- **Joblib library**: In order not to recalculate the machine model for training every run, I saved the trained model in a binary file with the help of the Joblib library, which allows saving objects to 
   binary files as well as loading them when necessary.
     
 ## Installation
