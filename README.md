@@ -1,5 +1,5 @@
 # StockPredictor
-A mobile application that offers forecasting and tracking services for shares in the capital market.
+A mobile application that offers forecasting and tracking services for stocks in the capital market.
 
 ## Table of Contents
 
