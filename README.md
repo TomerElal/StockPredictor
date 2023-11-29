@@ -47,13 +47,13 @@ StockPredictor is an application with two services:
 ``IOS`` : The "Expo Go" application must be installed from the App Store, copy the following link to the search bar on the iPhone and the application will open automatically.  
 link IOS - 
 ```
-exp://u.expo.dev/update/35a90b33-5e45-413a-a0ba-dc4eb20883b8
+exp://u.expo.dev/update/12ebf9dc-9242-444a-b7c2-e313a8d89e48
 ```  
   
 ``Android`` : The "Expo Go" application must be installed from the Google Play Store. Inside the expo app copy the following link and you will be directed to Stock Predictor immediately.  
 link Android - 
 ```
-exp://u.expo.dev/update/264306d6-f84d-4bd3-9712-772cae759b18
+exp://u.expo.dev/update/09cac8b0-9289-44b5-8da1-7ddb18b1f1b2
 ```  
   
 you can also scan the following QR codes (left for IOS) :  
