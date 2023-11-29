@@ -29,7 +29,7 @@ StockPredictor is an application with two services:
 - A very convenient interface for operating and maintaining a preferred watch list of stocks.  
 - Detailed description of each stock's company.  
 
-## Technologies & Libraries
+## Technologies and Libraries
 - **Expo tech** for mobile developers: The application was developed with the help of the React-Native library, which provides a convenient and efficient environment for developing mobile applications for 
   Android and IOS operating systems. With the help of Expo's application development technology, it was possible to see visual changes in the application in real time, thus enabling a better development 
   experience.  
