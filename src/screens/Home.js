@@ -1,48 +1,63 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
-    LayoutAnimation, Modal, Platform,
+    LayoutAnimation,
+    Modal,
+    Platform,
     SafeAreaView,
-    StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback,
-    View
-} from "react-native";
-import {RefreshControl} from "react-native-gesture-handler"
-import FontLoader from "../utils/FontLoader";
-import {FetchStockData} from "../utils/FetchStockData";
-import Loading from "./Loading";
-import SearchedStock from "./SearchedStock";
-import NavigationBar from "../components/NavigationBar";
-import StockContainer from "../components/StockContainer";
-import stocks from "../utils/stocks.json";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import EventEmitter from "react-native-eventemitter";
-import AddStocksModal from "../components/AddStocksModal";
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
+} from 'react-native';
+import {RefreshControl} from 'react-native-gesture-handler';
+import FontLoader from '../utils/FontLoader';
+import {FetchStockData} from '../utils/FetchStockData';
+import Loading from './Loading';
+import SearchedStock from './SearchedStock';
+import NavigationBar from '../components/NavigationBar';
+import StockContainer from '../components/StockContainer';
+import stocks from '../utils/stocks.json';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import EventEmitter from 'react-native-eventemitter';
+import AddStocksModal from '../components/AddStocksModal';
 import DraggableFlatList from 'react-native-draggable-flatlist';
-import SearchStocks from "../utils/SearchStocks";
+import SearchStocks from '../utils/SearchStocks';
 import * as Haptics from 'expo-haptics';
 
 function decideMargin(isEditMode) {
     const margin = isEditMode ? 50 : 0;
-    return Platform.OS === 'ios' ? margin : margin + 25
+    return Platform.OS === 'ios' ? margin : margin + 25;
 }
 
 function LoadDefaultStocks(props) {
-    return <View style={{flex: 1, justifyContent: 'center'}}>
-        <TouchableOpacity onPress={props.onPress} style={{
-            justifyContent: "center",
-            alignItems: "center",
-            padding: 10,
-            marginBottom: props.editMode ? decideMargin(true) : decideMargin(false),
-        }}>
-            <Text style={{
-                color: "#f8adb3",
-                fontSize: 22,
-                fontFamily: "titleFont"
-            }}>Load Default StockList</Text>
-        </TouchableOpacity>
-    </View>;
+    return (
+        <View style={{flex: 1, justifyContent: 'center'}}>
+            <TouchableOpacity
+                onPress={props.onPress}
+                style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    padding: 10,
+                    marginBottom: props.editMode ? decideMargin(true) : decideMargin(false),
+                }}
+            >
+                <Text
+                    style={{
+                        color: '#f8adb3',
+                        fontSize: 22,
+                        fontFamily: 'titleFont',
+                    }}
+                >
+                    Load Default StockList
+                </Text>
+            </TouchableOpacity>
+        </View>
+    );
 }
 
 function Home() {
+
     const [userSearchedStock, setUserSearchedStock] = useState(false);
     const [searchedStockData, setSearchedStockData] = useState({})
     const [loading, setLoading] = useState(false);
@@ -209,7 +224,8 @@ function Home() {
         setUserStocks(updatedCustomStocks);
         const stockPromises = symbolsToAdd.map((symbol) => FetchStockData(symbol, '5m'));
         const newStockData = await Promise.all(stockPromises);
-        await setStocksData([...newStockData, ...stocksDataList]);
+        const filteredStockData = newStockData.filter((data) => data !== null);
+        await setStocksData([...filteredStockData, ...stocksDataList]);
         setShowLoadDefaultButton(true);
         // Save the updated custom stocks in AsyncStorage
         await AsyncStorage.setItem('stocks', JSON.stringify(updatedCustomStocks));
@@ -289,27 +305,27 @@ function Home() {
     return (
         <FontLoader>
             <SafeAreaView style={styles.container}>
-                <NavigationBar onSearchSubmit={handleSearchSubmit}
-                               onHomeReturn={handleHomeReturnPress}
-                               flatListRef={flatListRef}
-                               boolIsHomeScreen={!userSearchedStock}
-                               onEditWatchlist={handleEditWatchlist}
-                               isEditMode={isEditMode}
-                               onPriceOrChangeDisplay={handlePriceOrChangeDisplay}
-                               onChangeCurrency={handleChangeCurrency}
-                               isPriceDisplay={isPriceDisplay}
-                               ref={NavigationBarRef}/>
+                <NavigationBar
+                    onSearchSubmit={handleSearchSubmit}
+                    onHomeReturn={handleHomeReturnPress}
+                    flatListRef={flatListRef}
+                    boolIsHomeScreen={!userSearchedStock}
+                    onEditWatchlist={handleEditWatchlist}
+                    isEditMode={isEditMode}
+                    onPriceOrChangeDisplay={handlePriceOrChangeDisplay}
+                    onChangeCurrency={handleChangeCurrency}
+                    isPriceDisplay={isPriceDisplay}
+                    ref={NavigationBarRef}
+                />
                 <View style={styles.container} onTouchStart={() => NavigationBarRef.current.closeMenu()}>
-                    {(isEditMode) ?
-                        (<>
+                    {(isEditMode) ? (
+                        <>
                             <TouchableOpacity onPress={() => setUserAddingStocks(true)}
-                                              style={{alignItems: 'center', padding: 20,}}>
-                                <Text style={{fontFamily: "titleFont", color: '#eb5779', fontSize: 20}}>Add
+                                              style={{alignItems: 'center', padding: 20}}>
+                                <Text style={{fontFamily: 'titleFont', color: '#eb5779', fontSize: 20}}>Add
                                     Stocks</Text>
                             </TouchableOpacity>
-                            <Modal animationType="fade"
-                                   transparent={true}
-                                   visible={userAddingStocks}
+                            <Modal animationType="fade" transparent={true} visible={userAddingStocks}
                                    onRequestClose={toggleModal}>
                                 <TouchableWithoutFeedback onPress={toggleModal}>
                                     <View style={styles.modalContainer}>
@@ -321,61 +337,79 @@ function Home() {
                                     </View>
                                 </TouchableWithoutFeedback>
                             </Modal>
-                        </>) : (<></>)}
-
-                    {userSearchedStock ?
-                        (<SearchedStock searchedStockData={searchedStockData}
-                                        handleHomeReturnPress={handleHomeReturnPress}
-                                        userStocks={userStocks}
-                                        isPriceDisplay={isPriceDisplay}
-                                        currency={currentCurrency}
-                                        currencySymbol={currentCurrencySymbol}
-                                        onUserClickedStock={handleUserClickedStock}
-                                        exchangeRate={currentExchangeRate}/>)
-                        : <></>}
-                    {stocksData.length > 0 && !userSearchedStock ?
-                        <>{isDraggable ?
-                            <DraggableFlatList
-                                keyboardDismissMode={"on-drag"}
-                                ref={flatListRef}
-                                data={stocksData}
-                                onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
-                                keyExtractor={(item) => item.ticker}
-                                renderItem={({item, getIndex, drag, isActive}) => {
-                                    return (<><StockContainer
-                                            stockData={item}
-                                            isEditMode={isEditMode}
-                                            onDeleteStock={handleStockDelete}
-                                            index={getIndex}
-                                            userStocks={userStocks}
-                                            drag={drag}
-                                            isActice={isActive}
-                                            showLoadDefaultButton={showLoadDefaultButton}
-                                            isPriceDisplay={isPriceDisplay}
-                                            currency={currentCurrency}
-                                            currencySymbol={currentCurrencySymbol}
-                                            exchangeRate={currentExchangeRate}
-                                            onUserClickedStock={handleUserClickedStock}
-                                        />
-                                            {getIndex() === userStocks.length - 1 && showLoadDefaultButton ?
-                                                <LoadDefaultStocks onPress={loadDefaultStockList}
-                                                                   editMode={isEditMode}/> : <></>}</>
-                                    )
-                                }}
-                                onDragEnd={({data}) => handleStockOrderChange(data)}
-
-                                refreshControl={
-                                    <RefreshControl
-                                        refreshing={refreshing}
-                                        onRefresh={handleRefresh}
-                                        tintColor="#f8adb3"
-                                    />}
-                            /> : <></>}
-                            {userStocks.length === 0 ? <LoadDefaultStocks onPress={loadDefaultStockList}
-                                                                          editMode={isEditMode}/> : <></>}
                         </>
-                        : <></>
-                    }
+                    ) : (
+                        <></>
+                    )}
+
+                    {userSearchedStock ? (
+                        <SearchedStock
+                            searchedStockData={searchedStockData}
+                            handleHomeReturnPress={handleHomeReturnPress}
+                            userStocks={userStocks}
+                            isPriceDisplay={isPriceDisplay}
+                            currency={currentCurrency}
+                            currencySymbol={currentCurrencySymbol}
+                            onUserClickedStock={handleUserClickedStock}
+                            exchangeRate={currentExchangeRate}
+                        />
+                    ) : (
+                        <></>
+                    )}
+                    {stocksData.length > 0 && !userSearchedStock ? (
+                        <>
+                            {isDraggable ? (
+                                <DraggableFlatList
+                                    keyboardDismissMode={'on-drag'}
+                                    ref={flatListRef}
+                                    data={stocksData}
+                                    onPlaceholderIndexChange={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
+                                    keyExtractor={(item) => item.ticker}
+                                    renderItem={({item, getIndex, drag, isActive}) => {
+                                        return (
+                                            <>
+                                                <StockContainer
+                                                    stockData={item}
+                                                    isEditMode={isEditMode}
+                                                    onDeleteStock={handleStockDelete}
+                                                    index={getIndex}
+                                                    userStocks={userStocks}
+                                                    drag={drag}
+                                                    isActice={isActive}
+                                                    showLoadDefaultButton={showLoadDefaultButton}
+                                                    isPriceDisplay={isPriceDisplay}
+                                                    currency={currentCurrency}
+                                                    currencySymbol={currentCurrencySymbol}
+                                                    exchangeRate={currentExchangeRate}
+                                                    onUserClickedStock={handleUserClickedStock}
+                                                />
+                                                {getIndex() === userStocks.length - 1 && showLoadDefaultButton ? (
+                                                    <LoadDefaultStocks onPress={loadDefaultStockList}
+                                                                       editMode={isEditMode}/>
+                                                ) : (
+                                                    <></>
+                                                )}
+                                            </>
+                                        );
+                                    }}
+                                    onDragEnd={({data}) => handleStockOrderChange(data)}
+                                    refreshControl={
+                                        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh}
+                                                        tintColor="#f8adb3"/>
+                                    }
+                                />
+                            ) : (
+                                <></>
+                            )}
+                            {userStocks.length === 0 ? (
+                                <LoadDefaultStocks onPress={loadDefaultStockList} editMode={isEditMode}/>
+                            ) : (
+                                <></>
+                            )}
+                        </>
+                    ) : (
+                        <></>
+                    )}
                 </View>
             </SafeAreaView>
         </FontLoader>
@@ -406,7 +440,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 10,
         backgroundColor: '#eb5779',
-
     },
     loadDefaultButtonText: {
         fontFamily: 'titleFont',
@@ -416,4 +449,5 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
 });
+
 export default Home;

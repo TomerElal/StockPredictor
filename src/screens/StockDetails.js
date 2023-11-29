@@ -1,21 +1,33 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
-    Button, Dimensions,
-    FlatList, Platform,
-    SafeAreaView, ScrollView,
+    Button,
+    Dimensions,
+    FlatList,
+    Platform,
+    SafeAreaView,
+    ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
     View
 } from 'react-native';
-import PointerAreaChart from "../components/PointerAreaChart";
+import PointerAreaChart from '../components/PointerAreaChart';
 import EventEmitter from 'react-native-eventemitter';
-import Icon from "react-native-vector-icons/FontAwesome5";
-import convertDataToGraphData from "../utils/ConvertDataToLineChartData";
+import Icon from 'react-native-vector-icons/FontAwesome5';
+import convertDataToGraphData from '../utils/ConvertDataToLineChartData';
 
 const dimensions = Dimensions.get('window');
-const StockDetails = ({route, navigation}) => {
+
+/**
+ * StockDetails component displays detailed information about a stock.
+ *
+ * @component
+ * @param {object} route - The route parameters passed to the component.
+ * @param {object} navigation - The navigation object.
+ * @returns {JSX.Element} - Rendered component.
+ */
+const StockDetails = ({ route, navigation }) => {
     const {
         ticker,
         companyName,
@@ -49,14 +61,17 @@ const StockDetails = ({route, navigation}) => {
     useEffect(() => {
         setIsScrollable(descriptionLayoutSize > scrollLayoutSize);
     }, [descriptionLayoutSize, scrollLayoutSize]);
+
     const handleAddToWatchlist = () => {
         EventEmitter.emit('addToWatchlistEvent', [ticker]);
         setIsTickerInWatchlist(!isTickerInWatchlist);
     };
+
     const handleRemoveFromWatchlist = () => {
         EventEmitter.emit('removeFromWatchlistEvent', ticker);
         setIsTickerInWatchlist(!isTickerInWatchlist);
     };
+
     const handleHomeReturn = () => {
         EventEmitter.emit('homeReturnEvent');
         navigation.goBack();
@@ -94,8 +109,7 @@ const StockDetails = ({route, navigation}) => {
         navigation.setOptions({
             headerRight: () => (
                 isTickerInWatchlist ? (
-                    <TouchableOpacity onPress={handleRemoveFromWatchlist}
-                                      style={{flexDirection: 'row', marginRight: 10,}}>
+                    <TouchableOpacity onPress={handleRemoveFromWatchlist} style={{ flexDirection: 'row', marginRight: 10, }}>
                         <Text style={styles.headerButtons}>Remove </Text>
                         <Text style={styles.headerButtons}>from Watchlist</Text>
                     </TouchableOpacity>
@@ -106,12 +120,8 @@ const StockDetails = ({route, navigation}) => {
                 )
             ),
             headerLeft: () => (
-                <TouchableOpacity onPress={handleHomeReturn}
-                                  style={{flex: 1, alignItems: 'center', flexDirection: 'row'}}>
-                    <Icon name={'chevron-left'} color={'#f8adb3'}
-                          size={(dimensions.width + dimensions.height) > 1200 ? 24 : 22}
-                          style={{paddingLeft: 10, paddingRight: 7, paddingBottom: Platform.OS === 'ios' ? 5 : 0,}}
-                          allowFontScaling={true}/>
+                <TouchableOpacity onPress={handleHomeReturn} style={{ flex: 1, alignItems: 'center', flexDirection: 'row' }}>
+                    <Icon name={'chevron-left'} color={'#f8adb3'} size={(dimensions.width + dimensions.height) > 1200 ? 24 : 22} style={{ paddingLeft: 10, paddingRight: 7, paddingBottom: Platform.OS === 'ios' ? 5 : 0, }} allowFontScaling={true} />
                     <Text style={styles.headerButtons}>Home</Text>
                 </TouchableOpacity>
             ),
@@ -119,16 +129,16 @@ const StockDetails = ({route, navigation}) => {
     }, [isTickerInWatchlist, navigation]);
 
     const data = [
-        {key: 'open', price: currOpenPrice, label: 'Open'},
-        {key: 'close', price: currClosePrice, label: 'Close'},
-        {key: 'high', price: (currMaxVal).toFixed(2), label: 'High'},
-        {key: 'low', price: (currMinVal).toFixed(2), label: 'Low'},
-        {key: 'change', price: Number(currPercentageChange).toFixed(2) + ' %', label: currRange + ' Change'},
+        { key: 'open', price: currOpenPrice, label: 'Open' },
+        { key: 'close', price: currClosePrice, label: 'Close' },
+        { key: 'high', price: (currMaxVal).toFixed(2), label: 'High' },
+        { key: 'low', price: (currMinVal).toFixed(2), label: 'Low' },
+        { key: 'change', price: Number(currPercentageChange).toFixed(2) + ' %', label: currRange + ' Change' },
     ];
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={{paddingRight: 15, paddingBottom: 5}}>
+            <View style={{ paddingRight: 15, paddingBottom: 5 }}>
                 <View style={styles.header}>
                     <Text style={styles.stockName}>{ticker}</Text>
                     <Text style={styles.companyName}>{companyName}</Text>
@@ -138,7 +148,7 @@ const StockDetails = ({route, navigation}) => {
                         data={data}
                         horizontal={true}
                         showsHorizontalScrollIndicator={false}
-                        renderItem={({item}) =>
+                        renderItem={({ item }) =>
                             <View style={styles.priceInfo}>
                                 <Text style={styles.price}>{item.price}</Text>
                                 <Text style={styles.PriceText}>{item.label}</Text>
@@ -146,16 +156,14 @@ const StockDetails = ({route, navigation}) => {
                         keyExtractor={(item) => item.key}
                     />
                 </View>
-                <View style={{padding: 10, paddingBottom: 0, flexDirection: "row"}}>
+                <View style={{ padding: 10, paddingBottom: 0, flexDirection: "row" }}>
                     <Text style={styles.currencyAndExchangeDisp}>{exchDisp} ◦ </Text>
                     <Text style={styles.currencyAndExchangeDisp}>{currency}</Text>
                 </View>
             </View>
-            <ScrollView scrollEnabled={isScrollable}
-                        onLayout={(event) => setScrollLayoutSize(event.nativeEvent.layout.height)}
-                        contentContainerStyle={{flexGrow: 1, alignContent: 'center', justifyContent: 'center',}}>
+            <ScrollView scrollEnabled={isScrollable} onLayout={(event) => setScrollLayoutSize(event.nativeEvent.layout.height)} contentContainerStyle={{ flexGrow: 1, alignContent: 'center', justifyContent: 'center', }}>
                 <View onLayout={(event) => setDescriptionLayoutSize(event.nativeEvent.layout.height)}>
-                    <Text style={{color: 'white', paddingLeft: 10,}}>
+                    <Text style={{ color: 'white', paddingLeft: 10, }}>
                         {companyDescription}
                     </Text>
                 </View>
@@ -168,17 +176,21 @@ const StockDetails = ({route, navigation}) => {
                 alignSelf: 'center'
             }}>
                 <FlatList
-                    data={[{range: '1d', interval: '5m'}, {range: '5d', interval: '30m'}, {
-                        range: '1mo',
-                        interval: '90m'
-                    }, {range: '6mo', interval: '1d'}, {range: 'ytd', interval: '1d'}, {
-                        range: '1y',
-                        interval: '1wk'
-                    }, {range: '2y', interval: '1wk'}, {range: '5y', interval: '1mo'}, {range: 'max', interval: '3mo'}]}
+                    data={[
+                        { range: '1d', interval: '5m' },
+                        { range: '5d', interval: '30m' },
+                        { range: '1mo', interval: '90m' },
+                        { range: '6mo', interval: '1d' },
+                        { range: 'ytd', interval: '1d' },
+                        { range: '1y', interval: '1wk' },
+                        { range: '2y', interval: '1wk' },
+                        { range: '5y', interval: '1mo' },
+                        { range: 'max', interval: '3mo' }
+                    ]}
                     horizontal={true}
-                    style={{width: dimensions.width,}}
+                    style={{ width: dimensions.width, }}
                     keyExtractor={(item) => item.range}
-                    renderItem={({item}) => {
+                    renderItem={({ item }) => {
                         return (
                             <TouchableOpacity onPress={() => changeGraphRange(item.range, item.interval)} style={{
                                 borderRightWidth: 1,
@@ -204,21 +216,19 @@ const StockDetails = ({route, navigation}) => {
                                 }}>{item.range}</Text>
                             </TouchableOpacity>
                         )
-                    }
-                    }
+                    }}
                 />
             </View>
             {loading ?
-                <View style={{paddingTop: 50, paddingBottom: 80, alignItems: 'center', justifyContent: 'center',}}>
-                    <ActivityIndicator size="large" color="#f8adb3"/>
-                    <Text style={{color: 'white', fontFamily: 'titleFont', fontSize: 24, padding: 30}}>Loading...</Text>
+                <View style={{ paddingTop: 50, paddingBottom: 80, alignItems: 'center', justifyContent: 'center', }}>
+                    <ActivityIndicator size="large" color="#f8adb3" />
+                    <Text style={{ color: 'white', fontFamily: 'titleFont', fontSize: 24, padding: 30 }}>Loading...</Text>
                 </View>
                 : <PointerAreaChart props={{
                     dailyData: currGraphData, changePercentage: currPercentageChange,
                     maxVal: currMaxVal, minVal: currMinVal, range: currRange, currencySymbol: currencySymbol
-                }}/>}
-
-            <Button title="Close" onPress={() => navigation.goBack()} color={'#f8adb3'}/>
+                }} />}
+            <Button title="Close" onPress={() => navigation.goBack()} color={'#f8adb3'} />
         </SafeAreaView>
     );
 };

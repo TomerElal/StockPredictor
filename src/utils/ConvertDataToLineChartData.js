@@ -7,7 +7,7 @@
 function convertDataToLineChartData(data) {
     // Check if the data structure is valid, otherwise return an empty array.
     if (!data || !data["chart"] || !data["chart"]["result"] || !data["chart"]["result"][0]) {
-        return [];
+        return null;
     }
 
     // Extract timestamps and closing prices from the data.
@@ -17,7 +17,7 @@ function convertDataToLineChartData(data) {
 
     // Check if the extracted data is valid, otherwise return an empty array.
     if (!timestamps || !prices || timestamps.length !== prices.length) {
-        return [];
+        return null;
     }
 
     // Create an array of data points with timestamp (x-axis) and price (y-axis).

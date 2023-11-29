@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -9,7 +9,7 @@ import {
     TouchableWithoutFeedback,
     Dimensions
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 // Import a custom component
 import CurvedLineChart from "./CurvedLineChart";
@@ -44,10 +44,13 @@ const StockContainer = React.memo(({
                                        exchangeRate,
                                        onUserClickedStock,
                                    }) => {
-    const {logo, ticker, companyName, percentageChange, graphData, exchDisp, companyDescription, lastPrice} = stockData;
+    const { logo, ticker, companyName, percentageChange, graphData, exchDisp, companyDescription, lastPrice } = stockData;
     const navigation = useNavigation();
     const [isModalVisible, setModalVisible] = useState(false);
 
+    /**
+     * Opens the stock details screen.
+     */
     const openStockDetails = () => {
         onUserClickedStock();
         navigation.navigate('StockDetailsScreen', {
@@ -64,48 +67,48 @@ const StockContainer = React.memo(({
         });
     };
 
+    /**
+     * Toggles the visibility of the modal.
+     */
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
     };
 
     return (
-        <View style={[styles.StockContainer, {marginTop: (index() === 0 && !isEditMode) ? 15 : 0,},
-            {marginBottom: (index() === userStocks.length - 1 && isEditMode && !showLoadDefaultButton) ? 75 : 15,}]}>
+        <View style={[styles.StockContainer, { marginTop: (index() === 0 && !isEditMode) ? 15 : 0 },
+            { marginBottom: (index() === userStocks.length - 1 && isEditMode && !showLoadDefaultButton) ? 75 : 15, }]}>
             {isEditMode ?
                 (<TouchableOpacity onPressIn={drag}
                                    disabled={isActive} style={styles.moveStockSign}>
-                    <View style={styles.line}/>
-                    <View style={styles.line}/>
-                    <View style={styles.line}/>
+                    <View style={styles.line} />
+                    <View style={styles.line} />
+                    <View style={styles.line} />
                 </TouchableOpacity>)
                 :
                 (<></>)
             }
             <TouchableOpacity onPress={openStockDetails} style={styles.leftContainer}>
-                <Image source={{uri: logo}} style={styles.logo}/>
+                <Image source={{ uri: logo }} style={styles.logo} />
                 <View style={styles.details}>
                     <Text style={styles.stockName}>{ticker}</Text>
                     <Text style={styles.companyName}>{companyName}</Text>
-                    <Text style={{
-                        fontSize: (dimensions.width + dimensions.height) > 1200 ? 14 : 12,
-                        color: percentageChange >= 0 ? '#39FF13' : '#eb5779'
-                    }}>
+                    <Text style={[styles.priceChangeText, {color: percentageChange >= 0 ? '#39FF13' : '#eb5779',}]}>
                         {isPriceDisplay ? (lastPrice * exchangeRate).toFixed(2) + currencySymbol : percentageChange + '%'}
                     </Text>
                 </View>
             </TouchableOpacity>
 
             {isEditMode ?
-                (<TouchableOpacity onPress={() => onDeleteStock(ticker)} style={{marginRight: 20,}}>
-                    <Icon name="minus-circle" size={(dimensions.width + dimensions.height) > 1200 ? 30 : 27}
-                          color="#eb5779"/>
+                (<TouchableOpacity onPress={() => onDeleteStock(ticker)} style={styles.deleteIconContainer}>
+                    <Icon name="minus-circle" size={styles.deleteIcon.size}
+                          color={styles.deleteIcon.color} />
                 </TouchableOpacity>)
                 :
-                (<View style={{flex: 0.8, flexDirection: 'row', alignItems: 'center',}}>
-                    <TouchableOpacity onPress={openStockDetails} style={{flex: 1, paddingRight: 10, paddingLeft: 10}}>
-                        <CurvedLineChart data={graphData} changePercentage={percentageChange}/>
+                (<View style={styles.chartAndPredictContainer}>
+                    <TouchableOpacity onPress={openStockDetails} style={styles.chartContainer}>
+                        <CurvedLineChart data={graphData} changePercentage={percentageChange} />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={toggleModal} style={{flex: 1, padding: 10}}>
+                    <TouchableOpacity onPress={toggleModal} style={styles.predictButtonContainer}>
                         <Text style={styles.buttonText}>Predict</Text>
                     </TouchableOpacity>
                 </View>)}
@@ -119,7 +122,7 @@ const StockContainer = React.memo(({
                         <TouchableWithoutFeedback>
                             <View style={styles.modalContent}>
                                 <ActivatePrediction ticker={ticker} toggleModal={toggleModal}
-                                                    companyName={companyName}/>
+                                                    companyName={companyName} />
                             </View>
                         </TouchableWithoutFeedback>
                     </View>
@@ -127,7 +130,7 @@ const StockContainer = React.memo(({
             </Modal>
         </View>
     );
-})
+});
 
 const styles = StyleSheet.create({
     StockContainer: {
@@ -177,9 +180,22 @@ const styles = StyleSheet.create({
         color: '#8a8c90',
         maxHeight: (dimensions.width + dimensions.height) > 1200 ? 35 : 25,
     },
-    middleAndRightContainer: {
+    priceChangeText: {
+        fontSize: (dimensions.width + dimensions.height) > 1200 ? 14 : 12,
+    },
+    chartAndPredictContainer: {
+        flex: 0.8,
+        flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
+    },
+    chartContainer: {
+        flex: 1,
+        paddingRight: 10,
+        paddingLeft: 10,
+    },
+    predictButtonContainer: {
+        flex: 1,
+        padding: 10,
     },
     buttonText: {
         color: '#f8adb3',
@@ -213,6 +229,13 @@ const styles = StyleSheet.create({
         marginTop: 5,
         height: (dimensions.width + dimensions.height) > 1200 ? 4 : 3.5,
         backgroundColor: 'black', // Line color
+    },
+    deleteIconContainer: {
+        marginRight: 20,
+    },
+    deleteIcon: {
+        size: (dimensions.width + dimensions.height) > 1200 ? 30 : 27,
+        color: '#eb5779',
     },
 });
 

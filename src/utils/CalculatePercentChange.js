@@ -10,7 +10,6 @@ export function CalculatePercentChange(data) {
         if (data["chart"] && data["chart"]["result"] && data["chart"]["result"].length > 0) {
             const result = data["chart"]["result"][0];
             const meta = result["meta"];
-
             if (meta && meta["previousClose"] !== undefined) {
                 const previousClose = meta["previousClose"];
                 const priceData = result["indicators"]["quote"][0];
