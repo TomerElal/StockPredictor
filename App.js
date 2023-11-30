@@ -1,15 +1,18 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
-import { Platform, View, StyleSheet } from 'react-native';
+import {DevSettings, Platform, View} from 'react-native';
 import Home from './src/screens/Home';
 import StockDetails from './src/screens/StockDetails';
 import StockPredictionDescription from './src/screens/StockPredictionDescription';
 import { I18nManager } from 'react-native';
 
-// Disable RTL support
-I18nManager.forceRTL(false);
-I18nManager.allowRTL(false);
+// Make sure the UI is Left to Right
+if(I18nManager.isRTL){
+    I18nManager.forceRTL(false);
+    I18nManager.allowRTL(false);
+    DevSettings.reload()
+}
 
 // Custom transition configuration
 const transitionConfig = {
@@ -29,6 +32,7 @@ const transitionConfig = {
  * @returns {JSX.Element} - The main application component.
  */
 const App = () => {
+
     return (
         <NavigationContainer>
             <Stack.Navigator>
