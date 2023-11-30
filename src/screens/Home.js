@@ -1,9 +1,10 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
+    Dimensions,
     LayoutAnimation,
     Modal,
     Platform,
-    SafeAreaView,
+    SafeAreaView, StatusBar,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -317,7 +318,7 @@ function Home() {
                     isPriceDisplay={isPriceDisplay}
                     ref={NavigationBarRef}
                 />
-                <View style={styles.container} onTouchStart={() => NavigationBarRef.current.closeMenu()}>
+                <View style={{flex:1,}} onTouchStart={() => NavigationBarRef.current.closeMenu()}>
                     {(isEditMode) ? (
                         <>
                             <TouchableOpacity onPress={() => setUserAddingStocks(true)}
@@ -420,6 +421,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#121212', // Set the background color of the app
+        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+        paddingBottom: Platform.OS === 'android' ? Dimensions.get('screen').height - Dimensions.get('window').height: 0,
     },
     modalContainer: {
         flex: 1,
