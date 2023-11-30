@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     },
     descriptionText: {
         color: '#B9BBB6',
-        fontSize: (dimensions.width + dimensions.height) > 1000 ? 18 : (dimensions.height) < 600 ? 14 : 16,
+        fontSize: (dimensions.width + dimensions.height) > 1200 ? 18 : (dimensions.height) < 700 ? 14 : 16,
         padding: 7,
         paddingTop: 20,
         alignSelf: 'center',
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         padding: 10,
         paddingTop: 0,
-        fontSize: (dimensions.width + dimensions.height) > 1000 ? 26 : 24,
+        fontSize: (dimensions.width + dimensions.height) > 1200 ? 26 : (dimensions.height) < 700 ? 22 : 24,
         color: 'white',
         paddingBottom: 20,
     },
