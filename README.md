@@ -17,9 +17,9 @@ StockPredictor is an application with two services:
 * The application offers stock forecasting services for value investors, where with the help of machine learning - the application predicts what the percentage change of any stock will be at the end of the calendar year.  
 
 <div align="center">
-    <img src="https://github.com/TomerElal/StockPredictor/assets/126855038/470a1e23-c4c9-4173-bc88-97c8c8fec05e" width="335" />
-    <img src="https://github.com/TomerElal/StockPredictor/assets/126855038/2c99eac7-452f-4fef-bf3e-dc8350beefae" width="335" />
-    <img src="https://github.com/TomerElal/StockPredictor/assets/126855038/8a75e49e-5e4e-41ef-8265-9368803bf04f" width="335" />
+    <img src="https://github.com/TomerElal/StockPredictor/assets/126855038/470a1e23-c4c9-4173-bc88-97c8c8fec05e" width="332" />
+    <img src="https://github.com/TomerElal/StockPredictor/assets/126855038/2c99eac7-452f-4fef-bf3e-dc8350beefae" width="332" />
+    <img src="https://github.com/TomerElal/StockPredictor/assets/126855038/8a75e49e-5e4e-41ef-8265-9368803bf04f" width="332" />
 </div>
 
 ## Features
@@ -59,7 +59,7 @@ exp://u.expo.dev/update/04e65d98-ba43-416a-b7ee-a0a09d6169c4
   
 you can also scan the following QR codes (left for IOS) :  
 <div align='center'>
-  <img src='https://github.com/TomerElal/StockPredictor/assets/126855038/e6c2074e-0356-403f-b7d0-2c800a8ff294' width=350 style="margin-right: 10px"/>
+  <img src='https://github.com/TomerElal/StockPredictor/assets/126855038/e6c2074e-0356-403f-b7d0-2c800a8ff294' width=350 style="margin-right: 100px"/>
   <img src='https://github.com/TomerElal/StockPredictor/assets/126855038/3eeb41b9-670f-4690-af7f-a4d7f99d525e' width=350/>
 </div>
 
