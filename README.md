@@ -60,7 +60,7 @@ exp://u.expo.dev/update/04e65d98-ba43-416a-b7ee-a0a09d6169c4
 you can also scan the following QR codes (left for IOS) :  
 <div align='center'>
   <img src='https://github.com/TomerElal/StockPredictor/assets/126855038/e6c2074e-0356-403f-b7d0-2c800a8ff294' width=350/>
-  <p>This is some text inside a div.</p>
+  <p> </p>
   <img src='https://github.com/TomerElal/StockPredictor/assets/126855038/3eeb41b9-670f-4690-af7f-a4d7f99d525e' width=350/>
 </div>
 
