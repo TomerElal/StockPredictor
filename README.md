@@ -17,9 +17,9 @@ StockPredictor is an application with two services:
 * The application offers stock forecasting services for value investors, where with the help of machine learning - the application predicts what the percentage change of any stock will be at the end of the calendar year.  
 
 <div align="center">
-    <img src="https://github.com/TomerElal/StockPredictor/assets/126855038/470a1e23-c4c9-4173-bc88-97c8c8fec05e" width="200" />
-    <img src="https://github.com/TomerElal/StockPredictor/assets/126855038/2c99eac7-452f-4fef-bf3e-dc8350beefae" width="200" />
-    <img src="https://github.com/TomerElal/StockPredictor/assets/126855038/8a75e49e-5e4e-41ef-8265-9368803bf04f" width="200" />
+    <img src="https://github.com/TomerElal/StockPredictor/assets/126855038/470a1e23-c4c9-4173-bc88-97c8c8fec05e" width="250" />
+    <img src="https://github.com/TomerElal/StockPredictor/assets/126855038/2c99eac7-452f-4fef-bf3e-dc8350beefae" width="250" />
+    <img src="https://github.com/TomerElal/StockPredictor/assets/126855038/8a75e49e-5e4e-41ef-8265-9368803bf04f" width="250" />
 </div>
 
 ## Features
