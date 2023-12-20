@@ -31,25 +31,34 @@ export async function FetchStockData(ticker, interval) {
         const lastPrice = closePrices[closePrices.length - 1].toFixed(2);
 
         // Check for valid data before returning
-        if (CalculatePercentChange(dailyChangeResponse) !== null && convertDataToGraphData(dailyChangeResponse) !== null) {
+        if (CalculatePercentChange(dailyChangeResponse) !== null) {
+            let companyName;
+            let exchDisp;
+            if (companyNameResponse && companyNameResponse["quotes"][0]){
+                companyName = companyNameResponse["quotes"][0]["shortname"];
+                exchDisp = companyNameResponse["quotes"][0]["exchDisp"];
+            }else{
+                companyName = companyDescriptionResponse && companyDescriptionResponse["Name"];
+                exchDisp = companyDescriptionResponse["Exchange"];
+            }
             return {
                 logo: logoResponse._bodyBlob._data.size > 1 && logoResponse.status === 200 ?
                     companyLogoUrl : "https://www.mah-taab.com/wp-content/uploads/2018/06/No-Logo-Available.png",
                 ticker: ticker,
-                companyName: companyNameResponse && companyNameResponse["quotes"][0]["shortname"],
+                companyName: companyName,
                 percentageChange: CalculatePercentChange(dailyChangeResponse),
                 graphData: convertDataToGraphData(dailyChangeResponse),
-                exchDisp: companyNameResponse["quotes"][0]["exchDisp"],
+                exchDisp: exchDisp,
                 companyDescription: Object.keys(companyDescriptionResponse).length > 0 ?
                     companyDescriptionResponse["Description"] :
                     "Description for this company is unavailable right now.",
                 lastPrice: lastPrice,
             };
         } else {
+
             return null;
         }
     } catch (error) {
-        // Handle errors and return null
         return null;
     }
 }
