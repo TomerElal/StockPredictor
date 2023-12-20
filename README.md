@@ -48,19 +48,19 @@ StockPredictor is an application with two services:
 ``IOS`` : The "Expo Go" application must be installed from the App Store, copy the following link to the search bar on the iPhone and the application will open automatically.  
 link IOS - 
 ```
-exp://u.expo.dev/update/f8d6d8af-15b0-4403-9d96-bea1fa4b5adb
+exp://u.expo.dev/update/c006312b-f845-43b5-93ee-4b6ffe966b9b
 ```  
   
 ``Android`` : The "Expo Go" application must be installed from the Google Play Store. Inside the expo app copy the following link and you will be directed to Stock Predictor immediately.  
 link Android - 
 ```
-exp://u.expo.dev/update/a310ad2c-fc2a-4165-a0ea-47498eeddfef
+exp://u.expo.dev/update/3c28cc7b-1c54-478d-bf76-7c7ff290c95e
 ```  
   
 you can also scan the following QR codes (left for IOS) :  
 <div align='center'>
-  <img src='https://qr.expo.dev/eas-update?updateId=f8d6d8af-15b0-4403-9d96-bea1fa4b5adb&appScheme=exp&host=u.expo.dev' width=350/>
-  <img src='https://qr.expo.dev/eas-update?updateId=a310ad2c-fc2a-4165-a0ea-47498eeddfef&appScheme=exp&host=u.expo.dev' width=350/>
+  <img src='https://qr.expo.dev/eas-update?updateId=c006312b-f845-43b5-93ee-4b6ffe966b9b&appScheme=exp&host=u.expo.dev' width=350/>
+  <img src='https://qr.expo.dev/eas-update?updateId=3c28cc7b-1c54-478d-bf76-7c7ff290c95e&appScheme=exp&host=u.expo.dev' width=350/>
 </div>
 
 
